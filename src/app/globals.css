@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-dasza-cyan: #00B4EF;
+  --color-dasza-cyan600: #00A0D6;
+  --color-dasza-navy: #3E526C;
+  --color-dasza-gray: #AAACAE;
+  --color-dasza-charcoal: #161517;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Partners marquee */
+.partners-marquee-viewport {
+  position: relative;
+  overflow: hidden;
+  padding-top: 8px;
+  padding-bottom: 16px;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.partners-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: max-content;
+  will-change: transform;
+  /* Left-to-right: span is 50% of the doubled track */
+  animation: marquee-ltr 120s linear infinite;
+}
+
+/* Direction/speed: adjust duration to taste (longer = slower).
+   For right-to-left, swap to marquee-rtl and use its keyframes instead. */
+@keyframes marquee-ltr {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+@keyframes marquee-rtl {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Cards and logos */
+.partner-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(148, 163, 184, 0.3); /* gray-400/30 */
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.03),
+    0 8px 16px rgba(15, 23, 42, 0.05);
+  background-clip: padding-box;
+}
+
+.partner-logo {
+  width: 10rem;   /* 40 */
+  height: 5rem;   /* 20 */
+  object-fit: contain;
+  transition: all 300ms;
+}
+
+/* Optional: hide native scrollbars if you ever allow overflow */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
