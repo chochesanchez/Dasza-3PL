@@ -105,16 +105,16 @@ export default function ContactForm() {
               <button
                 type="button"
                 onClick={()=>setOpen(!open)}
-                className="mt-1 w-full h-11 border rounded-xl bg-white px-3 text-left text-sm text-dasza-navy focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan flex items-center"
+                className="mt-1 w-full h-11 border rounded-xl bg-white px-3 text-left text-sm text-dasza-navy focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan flex items-center overflow-hidden whitespace-nowrap text-ellipsis"
               >
                 <span className={selected.length ? '' : 'text-dasza-navy/50'}>
-                  {selected.length ? selected.join(', ') : 'Select all that apply'}
+                  {selected.length ? `${selected.length} selected` : 'Select solutions'}
                 </span>
               </button>
               {open && (
-                <div className="absolute z-40 mt-2 w-full rounded-xl border bg-white shadow-lg p-3 max-h-60 overflow-auto">
+                <div className="absolute z-40 mt-2 w-full rounded-xl border bg-white shadow-lg p-3 max-h-64 overflow-auto">
                   {options.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 py-1">
+                    <label key={opt} className="flex items-center gap-2 py-2 text-sm">
                       <input type="checkbox" name="interest" value={opt} checked={selected.includes(opt)} onChange={()=>toggle(opt)} /> {opt}
                     </label>
                   ))}

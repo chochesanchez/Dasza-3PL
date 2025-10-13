@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server'
 import { quoteSchema } from '@/lib/zod'
 import { supabase } from '@/lib/supabaseClient'

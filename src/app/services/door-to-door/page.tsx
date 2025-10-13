@@ -11,7 +11,7 @@ export default function DoorToDoorPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <PageHeader title="Door-to-Door for Manufacturing" subtitle="End-to-end logistics for plants and suppliers" image="/images/door-to-door.png" />
+        <PageHeader title="Transportation Manufacturing" subtitle="Door-to-door logistics for plants and suppliers" image="/images/door-to-door.png" />
         <Section className="pt-6">
           <Breadcrumbs items={[
             { href: '/', label: 'Home' },

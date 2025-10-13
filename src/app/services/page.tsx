@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function ServicesPage() {
   const items = [
-    { title: 'IMMEX AAA Industrial | Shelter', href: '/services/warehousing', img: '/images/Factory Modern Image.jpg' },
+    { title: 'IMMEX AAA Industrial | Shelter', href: '/services/door-to-door', img: '/images/Factory Modern Image.jpg' },
     { title: 'IMMEX AAA Services | VMI', href: '/services/vmi', img: '/images/Industrial Properties Mexico.jpg' },
     { title: 'Warehousing', href: '/services/warehousing', img: '/images/Cargo Safety Temperature Control.jpg' },
     { title: 'Logistics', href: '/services/logistics', img: '/images/Temperature Logistics Steps.jpg' },

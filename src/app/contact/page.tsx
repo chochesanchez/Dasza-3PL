@@ -1,7 +1,7 @@
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import PageHeader from "@/components/ui/PageHeader";
-import MapComponent from "@/components/ui/MapComponent";
+// MapComponent temporarily unused — imported when we add interactive map
 import ContactForm from "@/components/ui/ContactForm";
 import GoogleMapsScript from "@/components/shared/GoogleMapsScript";
 
