@@ -45,7 +45,11 @@ export async function POST(req: NextRequest) {
     if (!captchaOk) return NextResponse.json({ error: 'reCAPTCHA failed' }, { status: 400 })
     const parsed = quoteSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid payload', issues: parsed.error.format() }, { status: 400 })
+      const issues = parsed.error.flatten()
+      console.error('Quote validation failed, sending anyway:', issues)
+      // Send email with raw body so submissions are not blocked
+      await sendQuoteEmail(body as any)
+      return NextResponse.json({ ok: true, validation: issues })
     }
     const { contact, product, trade, service, options, comments } = parsed.data
 

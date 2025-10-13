@@ -30,14 +30,7 @@ export default function QuotePage() {
     const w = window as unknown as { grecaptcha?: { execute: (key?: string, opts?: { action: string }) => Promise<string> } }
     const captchaToken = w.grecaptcha ? await w.grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, { action: 'submit' }) : undefined
     // Compose extended lead details (Ryder-style) into comments in ENGLISH
-    const ryderBlock = [
-      `How can we help you? (EN)`,
-      `First name: ${String(formData.get('firstName') || '').trim()}`,
-      `Last name: ${String(formData.get('lastName') || '').trim()}`,
-      `Title: ${String(formData.get('title') || '').trim()}`,
-      `Postal code: ${String(formData.get('postalCode') || '').trim()}`,
-      `Interested solutions: ${Array.from(formData.getAll('interest')).join(', ')}`,
-    ].join('\n')
+    const ryderBlock = ''
     const payload = {
       contact: {
         name: formData.get('name'),
@@ -73,7 +66,7 @@ export default function QuotePage() {
         insurance: formData.get('insurance') === 'on',
         other: formData.get('other'),
       },
-      comments: [String(formData.get('comments') || '').trim(), ryderBlock].filter(Boolean).join('\n\n'),
+      comments: String(formData.get('comments') || '').trim(),
       captchaToken,
     }
     setLoading(true)
@@ -202,7 +195,7 @@ export default function QuotePage() {
           </form>
         </section>
       </main>
-      <Modal open={Boolean(ok)} onClose={() => setOk(null)} title="Submitted">
+      <Modal open={Boolean(ok)} onClose={() => setOk(null)} title="Submitted" status="success">
         Your request was sent. Our team will contact you shortly at the email you provided.
       </Modal>
       <Footer />

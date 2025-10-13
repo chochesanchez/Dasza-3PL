@@ -46,20 +46,13 @@ export default function ContactForm() {
         email: formData.get('email'),
         phone: formData.get('phone'),
         company: formData.get('company'),
-        address: formData.get('postalCode'),
+        title: formData.get('title'),
+        postalCode: formData.get('postalCode'),
+        address: undefined,
       },
-      product: {
-        type: 'Contacto',
-        quantity: 0,
-      },
-      trade: {
-        hsCode: '0000',
-        origin: 'MX',
-      },
-      comments: [
-        String(formData.get('message')||'').trim(),
-        selected.length ? `Interested: ${selected.join(', ')}` : ''
-      ].filter(Boolean).join('\n') || undefined,
+      // Keep product/trade empty for Contact – email template handles missing sections gracefully
+      interests: selected,
+      comments: String(formData.get('message')||'').trim() || undefined,
     }
     setLoading(true)
     const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
@@ -160,7 +153,7 @@ export default function ContactForm() {
           </div>
         </aside>
       </div>
-      <Modal open={Boolean(ok)} onClose={() => setOk(null)} title="Submitted">
+      <Modal open={Boolean(ok)} onClose={() => setOk(null)} title="Submitted" status="success">
         Your message was sent. Our team will contact you shortly.
       </Modal>
     </form>

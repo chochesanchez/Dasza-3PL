@@ -9,7 +9,7 @@ export default function SmoothScroll() {
     const lenis = new Lenis({
       duration: 1.1,
       smoothWheel: true,
-    } as unknown as Parameters<typeof Lenis>[0])
+    })
     lenisRef.current = lenis
 
     let rafId = 0

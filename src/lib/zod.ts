@@ -2,29 +2,30 @@ import { z } from 'zod'
 
 export const quoteSchema = z.object({
   contact: z.object({
-    name: z.string().min(2),
-    email: z.string().email(),
+    name: z.string().optional(),
+    email: z.string().optional(),
     phone: z.string().optional(),
-    company: z.string().min(2),
-    address: z.string().optional()
-  }),
+    company: z.string().optional(),
+    address: z.string().optional(),
+    title: z.string().optional(),
+  }).partial(),
   product: z.object({
-    type: z.string().min(2),
-    quantity: z.coerce.number().int().nonnegative(),
+    type: z.string().optional(),
+    quantity: z.coerce.number().optional(),
     volume: z.string().optional(),
     weight: z.string().optional(),
-    photoUrl: z.string().url().optional()
-  }),
+    photoUrl: z.string().optional()
+  }).partial(),
   trade: z.object({
-    hsCode: z.string().min(4),
-    origin: z.string().min(2),
+    hsCode: z.string().optional(),
+    origin: z.string().optional(),
     incoterm: z.string().optional(),
-    port: z.enum(['Manzanillo', 'Altamira', 'Veracruz']).optional()
-  }),
+    port: z.string().optional()
+  }).partial(),
   service: z.object({
     frequency: z.string().optional(),
     destinations: z.string().optional(),
-    storageRequired: z.coerce.boolean(),
+    storageRequired: z.coerce.boolean().optional().default(false),
     conditions: z.array(z.string()).optional().default([]),
     timing: z.string().optional()
   }).optional(),

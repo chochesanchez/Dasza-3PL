@@ -21,7 +21,7 @@ export default function LoginPage() {
             <button className={`px-3 py-1 rounded ${mode==='login'?'bg-dasza-cyan text-white':'bg-gray-100'}`} onClick={()=>setMode('login')}>Log in</button>
             <button className={`px-3 py-1 rounded ${mode==='signup'?'bg-dasza-cyan text-white':'bg-gray-100'}`} onClick={()=>setMode('signup')}>Sign up</button>
           </div>
-          <form className="space-y-4" onSubmit={(e)=>{e.preventDefault(); mode==='login'?signIn(email,password):signUp(name,email,password)}}>
+          <form className="space-y-4" onSubmit={(e)=>{e.preventDefault(); if(mode==='login'){ void signIn(email,password) } else { void signUp(name,email,password) } }}>
             {mode==='signup' && (
               <input value={name} onChange={e=>setName(e.target.value)} placeholder="Name" className="border p-3 rounded-xl w-full" />
             )}

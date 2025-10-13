@@ -12,8 +12,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dasza 3PL — Complete Logistics Solutions",
+  title: "Dasza 3PL | Supply Chain Solutions",
   description: "Supply chain solutions for manufacturing in Mexico: IMMEX AAA warehousing, inventory control, intermodal via Manzanillo, Altamira & Veracruz.",
+  icons: {
+    icon: "/favicon-2025.ico",
+    shortcut: "/favicon-2025.ico",
+    apple: "/favicon-2025-512.png",
+  },
 };
 
 export const viewport = {

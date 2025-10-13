@@ -83,7 +83,7 @@ export default function Home() {
 
         {/* Dasza System information (moved below Services) */}
         <section className="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-2 gap-8 items-center">
-          <Image src="/images/Industrial Properties Mexico.jpg" alt="Dasza System" width={800} height={500} className="rounded-xl" />
+          <Image src="/images/Warehouse Technologies.png" alt="Dasza System" width={800} height={500} className="rounded-xl" />
           <div className="text-dasza-navy text-center md:text-left">
             <h3 className="text-3xl md:text-4xl font-semibold">Dasza System Information</h3>
             <p className="text-dasza-navy/80 mt-3">Our internal system tracks inventory, movements, KPIs, and documentation for each customer. Ask our team for a walkthrough.</p>
