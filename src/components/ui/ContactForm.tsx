@@ -1,11 +1,9 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '@/components/shared/AuthProvider'
 import Modal from '@/components/ui/Modal'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 
 export default function ContactForm() {
-  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [ok, setOk] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
@@ -79,7 +77,7 @@ export default function ContactForm() {
               <input name="lastName" placeholder="Last name" required className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
             <label className="text-sm text-dasza-navy/80">Email address*
-              <input name="email" type="email" placeholder="Email address" defaultValue={user?.email || ''} required className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+              <input name="email" type="email" placeholder="Email address" required className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
             <label className="text-sm text-dasza-navy/80">Phone
               <input name="phone" placeholder="Phone" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />

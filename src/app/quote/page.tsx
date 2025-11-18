@@ -29,8 +29,6 @@ export default function QuotePage() {
     const formData = new FormData(e.currentTarget)
     const w = window as unknown as { grecaptcha?: { execute: (key?: string, opts?: { action: string }) => Promise<string> } }
     const captchaToken = w.grecaptcha ? await w.grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, { action: 'submit' }) : undefined
-    // Compose extended lead details (Ryder-style) into comments in ENGLISH
-    const ryderBlock = ''
     const payload = {
       contact: {
         name: formData.get('name'),

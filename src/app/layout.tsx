@@ -4,7 +4,6 @@ import "./globals.css";
 import Analytics from "@/components/shared/Analytics";
 import PageTransition from "@/components/ui/PageTransition";
 import ScrollProgress from "@/components/shared/ScrollProgress";
-import AuthProvider from "@/components/shared/AuthProvider";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -34,9 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <ScrollProgress />
-        <AuthProvider>
-          <PageTransition>{children}</PageTransition>
-        </AuthProvider>
+        <PageTransition>{children}</PageTransition>
         <Analytics />
       </body>
     </html>
