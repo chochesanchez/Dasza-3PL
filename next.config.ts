@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const isDev = process.env.NODE_ENV !== 'production'
 
@@ -37,6 +38,8 @@ const nextConfig: NextConfig = {
       headers: buildSecurityHeaders(),
     },
   ],
+  // Silence incorrect workspace root inference (multiple lockfiles on machine)
+  outputFileTracingRoot: path.join(__dirname),
 };
 
 export default nextConfig;
