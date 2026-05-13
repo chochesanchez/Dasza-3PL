@@ -1,4 +1,6 @@
-![Dasza 3PL Logo](./public/images/Dasza%20Logistics%20Logo%202.png)
+<div align="center">
+  <img src="./public/images/Dasza%20Logistics%20Logo%202.png" alt="Dasza 3PL Logo" width="300" height="300" />
+</div>
 
 # Dasza 3PL | Supply Chain Solutions
 
