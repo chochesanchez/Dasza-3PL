@@ -2,7 +2,8 @@
   <img src="./public/images/Dasza%20Logistics%20Logo%202.png" alt="Dasza 3PL Logo" width="300" height="300" />
 </div>
 
-# Dasza 3PL | Supply Chain Solutions
+# Dasza 3PL
+# Supply Chain Solutions
 
 A modern web platform for **third-party logistics** solutions in Mexico, specializing in IMMEX AAA warehousing, inventory control, and intermodal logistics.
 
