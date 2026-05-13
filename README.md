@@ -4,7 +4,8 @@
 
 <div align="center">
 
-# Dasza 3PL | Supply Chain Solutions
+# Dasza 3PL
+# Supply Chain Solutions
 
 A modern web platform for **third-party logistics** solutions in Mexico, specializing in IMMEX AAA warehousing, inventory control, and intermodal logistics.
 
