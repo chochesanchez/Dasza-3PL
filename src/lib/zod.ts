@@ -13,6 +13,8 @@ export const quoteSchema = z.object({
     title: text,
     postalCode: text,
     website: text,
+    phoneCountry: text,
+    location: text,
   }),
   product: z.object({
     type: text,

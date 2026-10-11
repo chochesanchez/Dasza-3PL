@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { quoteSchema } from '@/lib/zod'
 import { supabase } from '@/lib/supabaseClient'
 import { sendQuoteEmail } from '@/lib/mail'
+import { locationFromHeaders } from '@/lib/geo'
 
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 10
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
       console.error('Contact/quote validation failed:', parsed.error.flatten())
       return NextResponse.json({ error: 'Invalid form data' }, { status: 400 })
     }
+    // Approximate location from the visitor's IP (set by Vercel), never from the client.
+    parsed.data.contact.location = locationFromHeaders(req.headers)
     const { contact, product, trade, service, options, comments } = parsed.data
 
     // Best-effort: insert to Supabase if configured, but don't block email on failure

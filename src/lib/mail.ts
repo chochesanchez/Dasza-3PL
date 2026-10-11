@@ -29,9 +29,11 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
   const contactUnknown = (doc as Record<string, unknown>)['contact']
   if (!subjectCompany && typeof contactUnknown === 'object' && contactUnknown !== null) {
     const maybeCompany = (contactUnknown as Record<string, unknown>)['company']
-    if (typeof maybeCompany === 'string') subjectCompany = maybeCompany
+    if (typeof maybeCompany === 'string' && maybeCompany.trim()) subjectCompany = maybeCompany
+    const maybeName = (contactUnknown as Record<string, unknown>)['name']
+    if (!subjectCompany && typeof maybeName === 'string' && maybeName.trim()) subjectCompany = maybeName
   }
-  if (!subjectCompany) subjectCompany = 'New submission'
+  if (!subjectCompany) subjectCompany = 'Website'
   const fromAddress = process.env.RESEND_FROM || 'forms@dasza.com'
   let replyTo: string | undefined
   if (typeof contactUnknown === 'object' && contactUnknown !== null) {
@@ -61,6 +63,8 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
     row('Name', str(contact['name'])),
     row('Email', str(contact['email'])),
     row('Phone', str(contact['phone'])),
+    row('Phone country', str(contact['phoneCountry'])),
+    row('Location (approx.)', str(contact['location'])),
     row('Company', str(contact['company'])),
     row('Title', str(contact['title'])),
     row('Postal Code', str(contact['postalCode'])),
@@ -101,6 +105,8 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
     ? (rawInterests as unknown[]).map((v) => String(v))
     : []
 
+  const isQuote = Boolean(isRecord(root['product']) || isRecord(root['trade']))
+  const heading = isQuote ? 'New quote request' : 'New contact request'
   const html = `
   <!doctype html>
   <html>
@@ -108,12 +114,12 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
-    <title>New form submission</title>
+    <title>${heading}</title>
   </head>
   <body style='margin:0;padding:16px;background:#F5F7FB;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif'>
     <div style='max-width:640px;margin:0 auto'>
       <div style='background:#ffffff;border:1px solid #E5E7EB;border-radius:12px;padding:16px'>
-        <h2 style='margin:0 0 12px 0;color:#0F172A;font-size:18px'>New form submission</h2>
+        <h2 style='margin:0 0 12px 0;color:#0F172A;font-size:18px'>${heading}</h2>
         ${section('Contact', contactHtml)}
         ${section('Product', productHtml)}
         ${section('Trade / Customs', tradeHtml)}
@@ -126,32 +132,33 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
   </body>
   </html>`
 
+  const line = (k: string, v?: string) => (v ? `${k}: ${v}` : '')
   const text = [
-    'New form submission',
+    isQuote ? 'New quote request' : 'New contact request',
     '',
-    `Name: ${str(contact['name']) ?? ''}`,
-    `Email: ${str(contact['email']) ?? ''}`,
-    `Phone: ${str(contact['phone']) ?? ''}`,
-    `Company: ${str(contact['company']) ?? ''}`,
-    `Title: ${str(contact['title']) ?? ''}`,
-    `Postal Code / Address: ${str(contact['address']) ?? ''}`,
-    '',
-    `Product: ${str(product['type']) ?? ''}`,
-    `Quantity: ${str(product['quantity']) ?? ''}`,
-    `Dimensions: ${str(product['volume']) ?? ''}`,
-    `Weight: ${str(product['weight']) ?? ''}`,
-    '',
-    `HS Code: ${str(trade['hsCode']) ?? ''}`,
-    `Origin: ${str(trade['origin']) ?? ''}`,
-    `Incoterm: ${str(trade['incoterm']) ?? ''}`,
-    '',
-    comments ? `Comments: ${comments}` : '',
+    line('Name', str(contact['name'])),
+    line('Email', str(contact['email'])),
+    line('Phone', str(contact['phone'])),
+    line('Phone country', str(contact['phoneCountry'])),
+    line('Location (approx.)', str(contact['location'])),
+    line('Company', str(contact['company'])),
+    line('Title', str(contact['title'])),
+    line('Address', str(contact['address'])),
+    interests.length ? `Interested in: ${interests.join(', ')}` : '',
+    line('Product', str(product['type'])),
+    line('Quantity', str(product['quantity'])),
+    line('Dimensions', str(product['volume'])),
+    line('Weight', str(product['weight'])),
+    line('HS Code', str(trade['hsCode'])),
+    line('Origin', str(trade['origin'])),
+    line('Incoterm', str(trade['incoterm'])),
+    comments ? `\nComments: ${comments}` : '',
   ].filter(Boolean).join('\n')
 
   const { error } = await resend.emails.send({
     from: `Dasza 3PL <${fromAddress}>`,
     to: ['jmsanchez@dasza.com'],
-    subject: `New form submission — ${subjectCompany}`,
+    subject: `${heading} — ${subjectCompany}`,
     text,
     html,
     ...(replyTo ? { replyTo } : {}),
