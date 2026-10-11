@@ -1,12 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
-import Header from "@/components/shared/Header";
-import Footer from "@/components/shared/Footer";
-import Reveal from "@/components/ui/Reveal";
-import Section from "@/components/ui/Section";
-import FeatureCard from "@/components/ui/FeatureCard";
-import { ShieldCheckIcon, ChartBarIcon, Cog6ToothIcon } from '@heroicons/react/24/outline'
-import ContactForm from "@/components/ui/ContactForm";
+import Image from 'next/image'
+import Link from 'next/link'
+import Header from '@/components/shared/Header'
+import Footer from '@/components/shared/Footer'
+import ContactForm from '@/components/ui/ContactForm'
+import RouteMap from '@/components/home/RouteMap'
+import ProcessSteps from '@/components/home/ProcessSteps'
+import ServiceIndex from '@/components/home/ServiceIndex'
+import SystemPreview from '@/components/home/SystemPreview'
+import ClientLogos from '@/components/home/ClientLogos'
+import Sites from '@/components/home/Sites'
+import { FACTS, CERTIFICATIONS, COMPANY } from '@/content/site'
 
 export default function Home() {
   return (
@@ -14,189 +17,142 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         {/* Hero */}
-        <section className="relative h-[560px] grid place-items-center text-center overflow-hidden">
-          <Image src="/images/Dasza 3pl Home Page Image.png" alt="Warehouse" fill priority className="object-cover brightness-75" />
-          <div className="absolute inset-0 bg-gradient-to-b from-dasza-charcoal/40 via-transparent to-dasza-charcoal/40" />
-          <div className="relative z-10 px-6">
-            <h1 className="text-4xl md:text-6xl font-bold text-white">Third‑Party Logistics Experts</h1>
+        <section className="bg-dasza-ink text-white overflow-hidden">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-14 md:pt-20 pb-12 grid lg:grid-cols-12 gap-10 lg:gap-6 items-center">
+            <div className="lg:col-span-5">
+              <h1 className="font-display text-[2.5rem] leading-[1.02] sm:text-6xl lg:text-[3.55rem] font-semibold">
+                From the port to your production line.
+              </h1>
+              <p className="mt-6 text-lg text-white/75 leading-relaxed max-w-lg">
+                DASZA imports your materials under our IMMEX AAA program, clears customs with our own broker, stores them in bonded
+                warehouses in Apodaca and Querétaro, and delivers to your plant on schedule.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/quote" className="inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
+                  Get a quote
+                </Link>
+                <Link href="#how-it-works" className="inline-flex items-center h-12 px-6 rounded-md border border-white/30 hover:border-white transition-colors">
+                  See how it works
+                </Link>
+              </div>
+              <ul className="mt-8 flex flex-wrap gap-2" aria-label="Certifications">
+                {CERTIFICATIONS.map((c) => (
+                  <li key={c} className="px-2.5 py-1 rounded border border-white/20 text-xs text-white/75">{c}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="lg:col-span-7 lg:-mr-8">
+              <RouteMap />
+            </div>
           </div>
-        </section>
-
-        {/* Stats */}
-        <section className="mx-auto max-w-7xl px-6 py-10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          {[
-            { k: 'Years', v: '+17' },
-            { k: 'Pallets', v: '+200k' },
-            { k: 'areas', v: '+200,000 sqf' },
-          ].map((s) => (
-            <Reveal key={s.k}>
-              <div className="rounded-xl border border-dasza-gray/40 p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-3xl font-bold text-dasza-navy">{s.v}</div>
-                <div className="text-dasza-navy/70 text-sm">{s.k}</div>
-              </div>
-            </Reveal>
-          ))}
-        </section>
-
-        {/* Intro */}
-        <section className="mx-auto max-w-7xl px-6 py-12 text-dasza-navy">
-          <div className="text-center">
-            <Reveal>
-              <div className="inline-flex items-center gap-3">
-                <Image src="/images/Dasza Logistics Logo 2.png" alt="Dasza 3PL" width={44} height={44} />
-                <h2 className="text-2xl md:text-4xl font-semibold text-dasza-navy">Dasza <span className="font-extrabold text-dasza-cyan">3PL</span></h2>
-              </div>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <div className="mt-4 mx-auto max-w-7xl text-left">
-                <p className="text-xl">With 17+ years of experience, we design and operate logistics and warehousing solutions for manufacturing in Mexico.</p>
-                <p className="mt-3 text-xl">Our teams deliver disciplined processes, real‑time inventory visibility, and end‑to‑end control across Warehousing, VMI, Logistics, and Customs.</p>
-                <div className="mt-4">
-                  <a href="/about" className="text-dasza-cyan hover:text-dasza-cyan600 font-medium">Learn more…</a>
+          <div className="border-t border-white/10">
+            <dl className="mx-auto max-w-7xl grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10">
+              {FACTS.map((f) => (
+                <div key={f.label} className="bg-dasza-ink px-5 sm:px-8 py-6 lg:py-8">
+                  <dt className="sr-only">{f.label}</dt>
+                  <dd>
+                    <span className="font-display text-2xl sm:text-3xl md:text-4xl font-semibold tabular-nums">{f.value}</span>
+                    {f.unit && <span className="ml-1.5 text-sm sm:text-base text-white/70 whitespace-nowrap">{f.unit}</span>}
+                    <span className="block mt-1 text-sm text-white/60">{f.label}</span>
+                  </dd>
                 </div>
-              </div>
-            </Reveal>
+              ))}
+            </dl>
           </div>
         </section>
 
-        {/* Services grid */}
-        <section className="mx-auto max-w-7xl px-6 py-12">
-          <Reveal>
-            <h2 className="text-3xl md:text-4xl font-semibold text-dasza-navy mb-6 text-center">Our Services</h2>
-          </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* How it works */}
+        <section id="how-it-works" className="scroll-mt-20 mx-auto max-w-7xl px-5 sm:px-8 py-20 md:py-28">
+          <div className="max-w-2xl mb-12">
+            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">One partner from the port to your plant</h2>
+            <p className="mt-5 text-lg text-dasza-navy leading-relaxed">
+              Instead of coordinating a customs broker, a carrier and a warehouse separately, you work with one team and see everything in one system.
+            </p>
+          </div>
+          <ProcessSteps />
+        </section>
+
+        {/* Services */}
+        <section className="bg-dasza-paper">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 py-20 md:py-28">
+            <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
+              <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05] max-w-xl">What we do for manufacturers</h2>
+              <Link href="/services" className="text-dasza-ink font-semibold underline decoration-dasza-cyan decoration-2 underline-offset-4 hover:text-dasza-cyan600">
+                All services
+              </Link>
+            </div>
+            <ServiceIndex />
+          </div>
+        </section>
+
+        {/* Dasza System */}
+        <section className="bg-dasza-ink text-white">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 py-20 md:py-28 grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5">
+              <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">See every pallet you have with us</h2>
+              <p className="mt-5 text-lg text-white/75 leading-relaxed">
+                Dasza System shows your inventory by item and location, every receipt and shipment, storage age, cycle counts and billing —
+                updated as our team scans pallets on the floor.
+              </p>
+              <Link href="/dasza-system" className="mt-8 inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
+                Try the interactive demo
+              </Link>
+            </div>
+            <div className="lg:col-span-7">
+              <SystemPreview />
+            </div>
+          </div>
+        </section>
+
+        {/* Sites */}
+        <section className="mx-auto max-w-7xl px-5 sm:px-8 py-20 md:py-28">
+          <div className="grid lg:grid-cols-12 gap-10 mb-12">
+            <h2 className="lg:col-span-6 font-display text-3xl md:text-5xl font-semibold leading-[1.05]">Where your inventory lives</h2>
+            <p className="lg:col-span-6 text-lg text-dasza-navy leading-relaxed self-end">
+              Three warehouses in Mexico’s two largest manufacturing regions, with racked positions of 1 × 1 × 1.30 m and floor space for heavy or oversize loads.
+            </p>
+          </div>
+          <Sites />
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { title: 'IMMEX AAA Industrial | Shelter', img: '/images/Factory Modern Image.jpg', href: '/services/warehousing' },
-              { title: 'IMMEX AAA Services | VMI', img: '/images/Industrial Properties Mexico.jpg', href: '/services/vmi' },
-              { title: 'Warehousing', img: '/images/Cargo Safety Temperature Control.jpg', href: '/services/warehousing' },
-              { title: 'Logistics', img: '/images/Temperature Logistics Steps.jpg', href: '/services/logistics' },
-              { title: 'Distribution / Last Mile', img: '/images/Dasza 3pl Home Page Image.png', href: '/services/last-mile' },
-            ].map((c) => (
-              <a key={c.title} href={c.href} className="group rounded-xl overflow-hidden border border-dasza-gray/40 hover:border-dasza-cyan transition-colors shadow-sm hover:shadow-md">
-                <div className="relative h-40">
-                  <Image src={c.img} alt="" fill className="object-cover group-hover:scale-105 transition-transform" />
-                </div>
-                <div className="p-4 text-dasza-navy font-semibold group-hover:text-dasza-cyan">{c.title}</div>
-              </a>
+              { src: '/images/site/dasza-pick-pack.jpg', alt: 'Dasza team member weighing and labeling a box at a packing station' },
+              { src: '/images/site/dasza-rework.jpg', alt: 'Technician reworking a compressor at a Dasza facility' },
+              { src: '/images/site/dasza-queretaro-plant.jpg', alt: 'Manufacturing floor at the Querétaro industrial site' },
+            ].map((p) => (
+              <div key={p.src} className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                <Image src={p.src} alt={p.alt} fill sizes="(min-width: 640px) 33vw, 100vw" className="object-cover" />
+              </div>
             ))}
           </div>
         </section>
 
-        {/* Dasza System information (moved below Services) */}
-        <section className="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-2 gap-8 items-center">
-          <Link href="/dasza-system" className="group block rounded-xl overflow-hidden" aria-label="Open the Dasza System interactive demo">
-            <Image src="/images/Warehouse Technologies.png" alt="Dasza System" width={800} height={500} className="rounded-xl group-hover:scale-[1.02] transition-transform" />
-          </Link>
-          <div className="text-dasza-navy text-center md:text-left">
-            <h3 className="text-3xl md:text-4xl font-semibold">Dasza System Information</h3>
-            <p className="text-dasza-navy/80 mt-3">Our internal system tracks inventory, movements, KPIs, and documentation for each customer. Take a two-minute guided tour with sample data.</p>
-            <Link href="/dasza-system" className="inline-block mt-6 px-6 py-2.5 rounded-full bg-dasza-navy text-white font-medium hover:bg-dasza-charcoal transition-colors">
-              Try the interactive demo
+        {/* Clients */}
+        <section className="mx-auto max-w-7xl px-5 sm:px-8 pb-20 md:pb-28">
+          <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
+            <h2 className="font-display text-3xl md:text-4xl font-semibold leading-[1.1] max-w-2xl">
+              Manufacturers and their suppliers move materials through DASZA
+            </h2>
+            <Link href="/about#clients" className="text-dasza-ink font-semibold underline decoration-dasza-cyan decoration-2 underline-offset-4 hover:text-dasza-cyan600">
+              See all clients
             </Link>
           </div>
+          <ClientLogos limit={18} />
         </section>
 
-                {/* Trusted by Industry Leaders (infinite loop, LTR) */}
-                <section className="w-full px-0 mt-10 md:mt-16 pb-4 md:pb-6">
-  <div className="px-6">
-    <Reveal>
-      <h2 className="text-3xl md:text-4xl font-semibold text-dasza-navy mb-6 text-center">
-        Trusted by Industry Leaders
-      </h2>
-    </Reveal>
-  </div>
-
-  <div className="partners-marquee-viewport">
-    {/* gradient edge masks */}
-    <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent" />
-    <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent" />
-    <div className="partners-marquee-track">
-      {(() => {
-        // Randomize order on each render
-        const base = [
-          '/images/Trusted By logos/Carrier Corporation Logo.png',
-          '/images/Trusted By logos/Magna Logo.png',
-          '/images/Trusted By logos/US Motors Logo.webp',
-          '/images/Trusted By logos/RXN logo.png',
-          '/images/Trusted By logos/Regal Beloit Logo.png',
-          '/images/Trusted By logos/fluidmaster logo.png',
-          '/images/Trusted By logos/Tuopu Group Logo.jpeg',
-          '/images/Trusted By logos/superior industries logo.png',
-          '/images/Trusted By logos/Dubai Logo Dark.png',
-          '/images/Trusted By logos/Dometic Logo.webp',
-          '/images/Trusted By logos/erd-metal-canada logo.png',
-          '/images/Trusted By logos/NSK Japan Logo.webp',
-          
-          '/images/Trusted By logos/MotoRad Logo.webp',
-          '/images/Trusted By logos/Metalsa Logo.avif',
-          '/images/Trusted By logos/Pilgrims Logo.png',
-          '/images/Trusted By logos/Munters Logo.webp',
-          
-          '/images/Trusted By logos/Ternium Logo.png',
-          '/images/Trusted By logos/Magnesitas Logo.png',
-          '/images/Trusted By logos/Mitsuba Corporation Logo.png',
-          '/images/Trusted By logos/elematec logo.gif',
-          '/images/Trusted By logos/Daimler Trucks Logo.png',
-          '/images/Trusted By logos/Conmet Logo.png',
-          '/images/Trusted By logos/Toyota Logo.png',
-          '/images/Trusted By logos/Whirlpool Logo copy.png',
-          '/images/Trusted By logos/Soriana Logo copy.webp',
-          '/images/Trusted By logos/Walmart Logo 2008 copy.png',
-          '/images/Trusted By logos/bbvalogo copy.png',
-          '/images/Trusted By logos/Celestica Logo copy.png',
-          '/images/Trusted By logos/Office Depot Logo copy.webp',
-          '/images/Trusted By logos/Embraco Logo copy.png',
-          '/images/Trusted By logos/sanminalogo copy.png',
-          '/images/Trusted By logos/Rockwell Automation Logo copy.jpg',
-        ];
-        const logos = base.slice().sort(() => Math.random() - 0.5);
-        const track = logos.concat(logos); // duplicate for seamless loop
-        return track.map((src, i) => (
-          <div key={i} className="partner-card h-28 w-64">
-            <Image
-              src={encodeURI(src)}
-              alt="Partner"
-              width={200}
-              height={60}
-              className="partner-logo max-h-12 md:max-h-14 w-auto opacity-90"
-            />
+        {/* Contact */}
+        <section id="contact" className="bg-dasza-paper">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 py-20 md:py-28">
+            <div className="max-w-2xl mb-10">
+              <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">Talk to a specialist</h2>
+              <p className="mt-5 text-lg text-dasza-navy leading-relaxed">
+                Tell us what you need and we’ll reply within one business day. Prefer to call? <a href={COMPANY.phoneHref} className="text-dasza-ink underline decoration-dasza-cyan decoration-2 underline-offset-4 whitespace-nowrap">{COMPANY.phone}</a>
+              </p>
+            </div>
+            <ContactForm />
           </div>
-        ));
-      })()}
-    </div>
-  </div>
-</section>
-
-        {/* See all partners link */}
-                <div className="px-6 mt-0 text-right">
-          <a href="/about#partners" className="inline-block font-semibold text-dasza-cyan hover:underline">See all →</a>
-        </div>
-
-        {/* Features */}
-        <Section title="Why us" subtitle="">
-          <div className="grid md:grid-cols-3 gap-4">
-            <FeatureCard title="Immex AAA | OEA | CT-PAT | ISO" description="Compliance and certifications that matter." icon={<ShieldCheckIcon className="h-7 w-7" aria-hidden />} />
-            <FeatureCard title="Inventory control & visibility" description="Dasza System provides full inventory control, KPIs, and real‑time visibility for error‑free operations." icon={<ChartBarIcon className="h-7 w-7" aria-hidden />} />
-            <FeatureCard title="Operational Excellence" description="Disciplined processes, traceability, and KPI‑driven performance." icon={<Cog6ToothIcon className="h-7 w-7" aria-hidden />} />
-          </div>
-        </Section>
-
-                {/* CTA Banner */}
-                <section className="w-full py-20 bg-dasza-cyan text-center mt-10 md:mt-16 mb-24 md:mb-32">
-          <h3 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight">Ready to Optimize Your Logistics?</h3>
-          <p className="mt-4 text-white/90 text-lg">Get in touch with our team for a customized solution.</p>
-          <a href="/quote" className="inline-block mt-10 px-10 py-4 rounded-full bg-white text-dasza-cyan font-semibold shadow-lg hover:shadow-xl transition">Get Quote</a>
-        </section>
-
-        {/* Contact form near footer */}
-        <section className="mx-auto max-w-7xl px-6 pb-24 text-dasza-navy">
-          <Reveal>
-            <h2 className="text-3xl md:text-4xl font-semibold text-dasza-navy mb-8 text-center">Contact Us</h2>
-          </Reveal>
-          <ContactForm />
         </section>
       </main>
       <Footer />
     </div>
-  );
+  )
 }

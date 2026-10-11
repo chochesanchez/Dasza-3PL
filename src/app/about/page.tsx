@@ -1,149 +1,101 @@
-import Header from "@/components/shared/Header";
-import Footer from "@/components/shared/Footer";
-import PageHeader from "@/components/ui/PageHeader";
-import Image from "next/image";
-import { UserGroupIcon, BuildingOfficeIcon, AdjustmentsHorizontalIcon, ArrowsRightLeftIcon, ChartBarIcon, MapPinIcon } from '@heroicons/react/24/outline'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Header from '@/components/shared/Header'
+import Footer from '@/components/shared/Footer'
+import PageIntro from '@/components/ui/PageIntro'
+import Sites from '@/components/home/Sites'
+import ClientLogos from '@/components/home/ClientLogos'
+import { COMPANY, CERTIFICATIONS } from '@/content/site'
+
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'DASZA is a third-party logistics company for manufacturers in Mexico: IMMEX importer, customs broker 6078 and bonded warehouses in Apodaca and Querétaro.',
+  alternates: { canonical: '/about' },
+}
+
+const PRINCIPLES = [
+  {
+    title: 'We work as part of your supply chain',
+    text: 'Our teams follow your production plan, your suppliers’ schedules and your compliance rules — not a generic warehouse routine.',
+  },
+  {
+    title: 'Every pallet is accounted for',
+    text: 'Material is checked against your packing list, labeled and located on arrival, and stays visible to you in Dasza System until it ships.',
+  },
+  {
+    title: 'Compliance is built in',
+    text: 'IMMEX AAA, OEA and our own customs broker mean the paperwork moves with the material, and you’re ready for any audit.',
+  },
+]
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <PageHeader
-          title="About Dasza 3PL"
-          subtitle="We design and operate logistics and warehousing solutions tailored to your manufacturing needs."
-          image="/images/Light Modern Warehouse Interior.jpg"
+        <PageIntro
+          title="A logistics partner built for manufacturing"
+          lead="DASZA imports, stores and delivers raw materials, components and finished goods for manufacturers and their suppliers in Mexico."
+          image="/images/site/warehouse-forklift.jpg"
+          crumbs={[{ href: '/', label: 'Home' }]}
         />
-        <section className="mx-auto max-w-7xl px-6 py-16 text-dasza-navy">
-          <div className="grid md:grid-cols-2 gap-20 items-start">
-            <div>
-              <h2 className="text-3xl font-bold mb-2">Who we are</h2>
-              <div className="flex items-center gap-3 mb-6">
-                <Image src="/images/Dasza Logistics Logo.jpeg" alt="Dasza 3PL" width={36} height={36} />
-                <div className="text-2xl font-semibold text-dasza-navy">Dasza <span className="font-extrabold text-dasza-cyan">3PL</span></div>
-              </div>
-              <div className="space-y-4 text-lg leading-8 max-w-2xl">
-                <p>
-                  We are Dasza 3PL. With <strong>+17 years of experience</strong>, we design and operate <strong>logistics and warehousing solutions</strong> tailored to your manufacturing needs—covering raw materials, components, and finished goods.
-                </p>
-                <p>
-                  Our approach supports your decision‑making with <strong>accurate data, real‑time inventory visibility, and disciplined processes</strong> across <strong>Warehousing, VMI, Logistics and Customs</strong>.
-                </p>
-              </div>
-              {/* buttons removed per request */}
-              {/* Value widgets */}
-              <div className="mt-8 grid grid-cols-2 gap-5 items-stretch">
-                <div className="rounded-xl border border-dasza-gray/30 bg-white shadow p-5 text-center h-full min-h-36 flex flex-col justify-center">
-                  <div className="mx-auto h-10 w-10 grid place-items-center text-dasza-cyan mb-2"><BuildingOfficeIcon className="h-7 w-7" /></div>
-                  <div className="text-sm font-semibold">200,000 sqf</div>
-                  <div className="text-xs text-dasza-navy/70">of operational space</div>
-                </div>
-                <div className="rounded-xl border border-dasza-gray/30 bg-white shadow p-5 text-center h-full min-h-36 flex flex-col justify-center">
-                  <div className="mx-auto h-10 w-10 grid place-items-center text-dasza-cyan mb-2"><AdjustmentsHorizontalIcon className="h-7 w-7" /></div>
-                  <div className="text-sm font-semibold">Tailored</div>
-                  <div className="text-xs text-dasza-navy/70">to manufacturing plants</div>
-                </div>
-                <div className="rounded-xl border border-dasza-gray/30 bg-white shadow p-5 text-center h-full min-h-36 flex flex-col justify-center">
-                  <div className="mx-auto h-10 w-10 grid place-items-center text-dasza-cyan mb-2"><ArrowsRightLeftIcon className="h-7 w-7" /></div>
-                  <div className="text-sm font-semibold">Scope</div>
-                  <div className="text-xs text-dasza-navy/70">raw materials → finished goods</div>
-                </div>
-                <div className="rounded-xl border border-dasza-gray/30 bg-white shadow p-5 text-center h-full min-h-36 flex flex-col justify-center">
-                  <div className="mx-auto h-10 w-10 grid place-items-center text-dasza-cyan mb-2"><ChartBarIcon className="h-7 w-7" /></div>
-                  <div className="text-sm font-semibold">Value</div>
-                  <div className="text-xs text-dasza-navy/70">data + process discipline</div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold mb-2">Infrastructure</h2>
-              <p className="mb-3 text-lg leading-8 max-w-2xl">
-                Our network of <strong>industrial warehouses (naves industriales)</strong> is strategically located to serve Mexico’s main manufacturing clusters.
-              </p>
-              <p className="mb-6 text-lg leading-8 max-w-2xl">All our facilities are equipped with <strong>RF scanning, BI dashboards, and seamless integrations with SAP and Dynamics</strong> to ensure real‑time visibility and compliance.</p>
-              <div className="grid grid-cols-1 gap-4 max-w-2xl items-stretch">
-                {[{city:'Apodaca',desc:'Bonded and general-purpose warehouses with advanced security and inventory systems.'},{city:'Querétaro',desc:'Dedicated space for vendor‑managed inventory and sub‑assembly operations.'},{city:'Manzanillo Office',desc:'Direct support for port operations and international trade flows.'}].map(loc => (
-                  <div key={loc.city} className="rounded-xl border border-dasza-gray/30 bg-white shadow p-5 flex items-start gap-3 h-full min-h-28">
-                    <MapPinIcon className="h-6 w-6 text-dasza-cyan flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-semibold text-dasza-navy">{loc.city}</div>
-                      <div className="text-sm text-dasza-navy/80">{loc.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+
+        <section className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-24 grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-5">
+            <h2 className="font-display text-3xl md:text-4xl font-semibold leading-[1.1]">How we work</h2>
+            <p className="mt-5 text-lg text-dasza-navy leading-relaxed">
+              Most of our clients are foreign suppliers to Mexican plants, and the plants themselves. We act as importer under our IMMEX program,
+              clear customs with our own broker (license {COMPANY.customsLicense}), hold material in bonded warehouses and release it to production as needed.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-2" aria-label="Certifications">
+              {CERTIFICATIONS.map((c) => (
+                <li key={c} className="px-3 py-1.5 rounded border border-dasza-line text-sm">{c}</li>
+              ))}
+            </ul>
+          </div>
+          <ul className="lg:col-span-7 border-t border-dasza-line">
+            {PRINCIPLES.map((p) => (
+              <li key={p.title} className="py-6 border-b border-dasza-line">
+                <h3 className="font-display text-xl font-semibold">{p.title}</h3>
+                <p className="mt-2 text-dasza-navy leading-relaxed">{p.text}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="bg-dasza-paper">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-24">
+            <h2 className="font-display text-3xl md:text-4xl font-semibold mb-10">Our sites</h2>
+            <Sites />
           </div>
         </section>
 
-        {/* Partners gallery */}
-        <section id="partners" className="mx-auto max-w-7xl px-6 py-16">
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <UserGroupIcon className="h-9 w-9 text-dasza-cyan" aria-hidden />
-              <h2 className="text-2xl md:text-3xl font-bold">Our Partners</h2>
-            </div>
-            <p className="text-dasza-navy/80 text-lg leading-8 mb-10 max-w-5xl">
-              We are trusted by leaders across automotive, electronics, appliances, retail and more. Here’s a snapshot of brands who rely on our logistics and distribution network.
-            </p>
+        <section className="mx-auto max-w-7xl px-5 sm:px-8 py-16 md:py-24 grid md:grid-cols-2 gap-4">
+          <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+            <Image src="/images/site/dasza-pick-pack.jpg" alt="Dasza team member labeling a box at a packing station" fill sizes="50vw" className="object-cover" />
           </div>
-          <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            {(() => {
-              const base = [
-              '/images/Trusted By logos/Carrier Corporation Logo.png',
-              '/images/Trusted By logos/Magna Logo.png',
-              '/images/Trusted By logos/US Motors Logo.webp',
-              '/images/Trusted By logos/RXN logo.png',
-              '/images/Trusted By logos/Regal Beloit Logo.png',
-              '/images/Trusted By logos/fluidmaster logo.png',
-              '/images/Trusted By logos/Tuopu Group Logo.jpeg',
-              '/images/Trusted By logos/superior industries logo.png',
-              '/images/Trusted By logos/Dubai Logo Dark.png',
-              '/images/Trusted By logos/Dometic Logo.webp',
-              '/images/Trusted By logos/erd-metal-canada logo.png',
-              '/images/Trusted By logos/NSK Japan Logo.webp',
-              '/images/Trusted By logos/MotoRad Logo.webp',
-              '/images/Trusted By logos/Metalsa Logo.avif',
-              '/images/Trusted By logos/Pilgrims Logo.png',
-              '/images/Trusted By logos/Munters Logo.webp',
-              '/images/Trusted By logos/Ternium Logo.png',
-              '/images/Trusted By logos/Magnesitas Logo.png',
-              '/images/Trusted By logos/Mitsuba Corporation Logo.png',
-              '/images/Trusted By logos/elematec logo.gif',
-              '/images/Trusted By logos/Daimler Trucks Logo.png',
-              '/images/Trusted By logos/Conmet Logo.png',
-              '/images/Trusted By logos/Toyota Logo.png',
-              '/images/Trusted By logos/Whirlpool Logo copy.png',
-              '/images/Trusted By logos/Soriana Logo copy.webp',
-              '/images/Trusted By logos/Walmart Logo 2008 copy.png',
-              '/images/Trusted By logos/bbvalogo copy.png',
-              '/images/Trusted By logos/Celestica Logo copy.png',
-              '/images/Trusted By logos/Office Depot Logo copy.webp',
-              '/images/Trusted By logos/Embraco Logo copy.png',
-              '/images/Trusted By logos/sanminalogo copy.png',
-              '/images/Trusted By logos/Rockwell Automation Logo copy.jpg',
-              ]
-              const shuffled = base.slice().sort(() => Math.random() - 0.5)
-              return shuffled.map((src, i) => (
-              <div key={i} className="partner-card">
-                <div className="relative w-40 h-20">
-                  <Image src={encodeURI(src)} alt="Partner" fill sizes="160px" className="partner-logo" style={{ objectFit: 'contain', backgroundColor: 'white' }} />
-                </div>
-              </div>
-              ))
-            })()}
+          <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+            <Image src="/images/site/dasza-rework.jpg" alt="Technician reworking a compressor" fill sizes="50vw" className="object-cover" />
           </div>
+        </section>
 
-          <div className="max-w-4xl mx-auto px-6 pt-16 text-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-2">You can be here, too</h3>
-            <p className="text-dasza-navy/80 mb-6">Join a growing network of industry leaders who trust our logistics, warehousing and last‑mile solutions.</p>
-            <a href="/contact" className="inline-block px-8 py-3 rounded-full bg-dasza-cyan text-white font-semibold shadow-md hover:shadow-lg transition">Contact us</a>
+        <section id="clients" className="scroll-mt-20 mx-auto max-w-7xl px-5 sm:px-8 pb-16 md:pb-24">
+          <h2 className="font-display text-3xl md:text-4xl font-semibold mb-3">Clients</h2>
+          <p className="text-dasza-navy text-lg mb-10 max-w-2xl">Manufacturers in automotive, appliances, steel, electronics and industrial equipment — and the suppliers that serve them.</p>
+          <ClientLogos />
+        </section>
+
+        <section className="bg-dasza-ink text-white">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 py-14 grid md:grid-cols-[1fr_auto] gap-6 items-center">
+            <div>
+              <h2 className="font-display text-2xl md:text-3xl font-semibold">Need last-mile delivery too?</h2>
+              <p className="mt-2 text-white/70">Our sister company DLT Logistics handles storage, distribution and fulfillment across Mexico’s main metros.</p>
+            </div>
+            <a href={COMPANY.dltUrl} className="inline-flex items-center h-12 px-6 rounded-md bg-[#FFCC00] text-dasza-charcoal font-semibold">Visit DLT Logistics</a>
           </div>
         </section>
       </main>
       <Footer />
     </div>
-  );
+  )
 }
-
-

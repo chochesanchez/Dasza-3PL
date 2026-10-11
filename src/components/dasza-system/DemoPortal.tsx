@@ -354,7 +354,7 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
       </div>
 
       {/* Portal frame */}
-      <div className="rounded-2xl border border-dasza-gray/50 shadow-[0_10px_30px_rgba(0,0,0,0.08)] overflow-hidden bg-gray-50">
+      <div className="rounded-lg border border-dasza-line shadow-[0_20px_40px_-20px_rgba(0,0,0,0.25)] overflow-hidden bg-gray-50">
         <div className="flex items-center justify-between bg-dasza-charcoal text-white px-4 py-2.5">
           <div className="flex items-center gap-2 font-semibold whitespace-nowrap">
             DASZA System
@@ -417,11 +417,11 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
                       Back
                     </button>
                     {tourStep! < TOUR.length - 1 ? (
-                      <button onClick={() => goTour(tourStep! + 1)} className="px-4 py-1.5 rounded-full text-sm bg-dasza-navy text-white hover:bg-dasza-charcoal">
+                      <button onClick={() => goTour(tourStep! + 1)} className="px-4 py-1.5 rounded-md text-sm bg-dasza-ink text-white hover:bg-dasza-charcoal">
                         Next
                       </button>
                     ) : (
-                      <button onClick={() => setTourStep(null)} className="px-4 py-1.5 rounded-full text-sm bg-dasza-navy text-white hover:bg-dasza-charcoal">
+                      <button onClick={() => setTourStep(null)} className="px-4 py-1.5 rounded-md text-sm bg-dasza-ink text-white hover:bg-dasza-charcoal">
                         Finish & explore
                       </button>
                     )}
@@ -435,7 +435,7 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
       </div>
 
       {/* Closing CTA */}
-      <div className="rounded-2xl bg-dasza-navy text-white p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="rounded-lg bg-dasza-ink text-white p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="text-xl font-semibold">Want to see it with your real operation?</div>
           <p className="text-white/80 mt-1">Our team will walk you through onboarding, reporting and IMMEX inventory control.</p>

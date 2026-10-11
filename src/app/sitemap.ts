@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '',
     '/about',
     '/services',
+    '/services/immex',
     '/services/warehousing',
     '/services/vmi',
     '/services/logistics',

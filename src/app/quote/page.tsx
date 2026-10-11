@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
-import PageHeader from "@/components/ui/PageHeader";
+import PageIntro from "@/components/ui/PageIntro";
 import { useRef, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import Script from "next/script";
@@ -75,7 +75,7 @@ export default function QuotePage() {
       setOk(data.id || 'ok')
       ;(e.target as HTMLFormElement).reset()
     } else {
-      alert('There was an error. Please check fields and try again.')
+      alert('Your quote request could not be sent. Please try again, or message us on WhatsApp at +52 81 1916 1086.')
     }
   }
 
@@ -83,47 +83,47 @@ export default function QuotePage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <PageHeader title="Get a Quote" subtitle="Tell us about your product and flow" image="/images/Industrial Properties Mexico.jpg" />
-        <section className="mx-auto max-w-5xl px-6 py-12 text-dasza-navy">
+        <PageIntro title="Get a quote" lead="Tell us about your product and how it moves. The more we know, the more precise the proposal — fields marked * are required." crumbs={[{ href: "/", label: "Home" }]} />
+        <section className="bg-dasza-paper"><div className="mx-auto max-w-4xl px-5 sm:px-8 py-14 md:py-20 text-dasza-ink">
           {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
             <Script src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`} strategy="afterInteractive" />
           )}
-          <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2"><h3 className="text-xl font-semibold">Information</h3></div>
-            <label className="text-sm text-dasza-navy/80">Name*
-              <input name="name" required placeholder="Name" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+          <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 rounded-lg border border-dasza-line bg-white p-6 sm:p-10">
+            <div className="md:col-span-2"><h3 className="font-display text-xl font-semibold pb-3 border-b border-dasza-line">Information</h3></div>
+            <label className="text-sm font-medium text-dasza-ink">Name*
+              <input name="name" required placeholder="Name" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Company*
-              <input name="company" required placeholder="Company" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Company*
+              <input name="company" required placeholder="Company" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Email*
-              <input name="email" type="email" required placeholder="Email" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Email*
+              <input name="email" type="email" required placeholder="Email" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Phone
-              <input name="phone" placeholder="Phone" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Phone
+              <input name="phone" placeholder="Phone" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80 md:col-span-2">Address
-              <input name="address" placeholder="Address" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink md:col-span-2">Address
+              <input name="address" placeholder="Address" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80 md:col-span-2">Business URL
-              <input name="businessUrl" placeholder="Business URL" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink md:col-span-2">Business URL
+              <input name="businessUrl" placeholder="Business URL" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
 
-            <div className="md:col-span-2 mt-4"><h3 className="text-xl font-semibold">Product</h3></div>
-            <label className="text-sm text-dasza-navy/80">Product | Value*
-              <input name="product" required placeholder="Product | Value" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <div className="md:col-span-2 mt-6"><h3 className="font-display text-xl font-semibold pb-3 border-b border-dasza-line">Product</h3></div>
+            <label className="text-sm font-medium text-dasza-ink">Product | Value*
+              <input name="product" required placeholder="Product | Value" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Quantity*
-              <input name="quantity" type="number" required placeholder="Quantity" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Quantity*
+              <input name="quantity" type="number" required placeholder="Quantity" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Dimensions / Size
-              <input name="volume" placeholder="Dimensions / Size" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Dimensions / Size
+              <input name="volume" placeholder="Dimensions / Size" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Weight
-              <input name="weight" placeholder="Weight" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Weight
+              <input name="weight" placeholder="Weight" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
             <div className="md:col-span-2">
-              <div className="text-sm text-dasza-navy/80">Photos (PDF, PNG, JPG/JPEG)</div>
+              <div className="text-sm font-medium text-dasza-ink">Photos (PDF, PNG, JPG/JPEG)</div>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -139,59 +139,59 @@ export default function QuotePage() {
                     {f.name}
                   </span>
                 ))}
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="rounded-full border border-dasza-cyan text-dasza-cyan px-3 py-1 text-sm hover:bg-dasza-cyan hover:text-white">Add file</button>
+                <button type="button" onClick={() => fileInputRef.current?.click()} className="rounded-md border border-dasza-ink text-dasza-ink px-3 py-1.5 text-sm hover:bg-dasza-ink hover:text-white">Add file</button>
               </div>
             </div>
 
-            <div className="md:col-span-2 mt-4"><h3 className="text-xl font-semibold">Trade/Customs</h3></div>
-            <label className="text-sm text-dasza-navy/80">HS Code*
-              <input name="hsCode" required placeholder="HS Code" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <div className="md:col-span-2 mt-6"><h3 className="font-display text-xl font-semibold pb-3 border-b border-dasza-line">Trade/Customs</h3></div>
+            <label className="text-sm font-medium text-dasza-ink">HS Code*
+              <input name="hsCode" required placeholder="HS Code" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Country of Origin*
-              <input name="origin" required placeholder="Country of Origin" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Country of Origin*
+              <input name="origin" required placeholder="Country of Origin" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Incoterm
-              <input name="incoterm" placeholder="Incoterm" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Incoterm
+              <input name="incoterm" placeholder="Incoterm" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
             
 
-            <div className="md:col-span-2 mt-4"><h3 className="text-xl font-semibold">Service requirements</h3></div>
-            <label className="text-sm text-dasza-navy/80">Frequency
-              <input name="frequency" placeholder="Frequency" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <div className="md:col-span-2 mt-6"><h3 className="font-display text-xl font-semibold pb-3 border-b border-dasza-line">Service requirements</h3></div>
+            <label className="text-sm font-medium text-dasza-ink">Frequency
+              <input name="frequency" placeholder="Frequency" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="text-sm text-dasza-navy/80">Destinations
-              <input name="destinations" placeholder="Destinations" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink">Destinations
+              <input name="destinations" placeholder="Destinations" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
-            <label className="flex items-center gap-2"><input type="checkbox" name="storageRequired" /> Storage required</label>
+            <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="storageRequired" className="h-4 w-4 accent-dasza-cyan" /> Storage required</label>
             <div className="flex gap-4 md:col-span-2">
               {['fragile','hazmat','refrigerated'].map(c => (
-                <label key={c} className="flex items-center gap-2"><input type="checkbox" name="conditions" value={c} /> {c}</label>
+                <label key={c} className="flex items-center gap-2 text-sm capitalize"><input type="checkbox" name="conditions" value={c} className="h-4 w-4 accent-dasza-cyan" /> {c}</label>
               ))}
             </div>
-            <label className="text-sm text-dasza-navy/80 md:col-span-2">Timing
-              <input name="timing" placeholder="Timing" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink md:col-span-2">Timing
+              <input name="timing" placeholder="Timing" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
 
-            <div className="md:col-span-2 mt-4"><h3 className="text-xl font-semibold">Options</h3></div>
-            <label className="flex items-center gap-2 text-sm text-dasza-navy/80"><input type="checkbox" name="tracking" /> Tracking</label>
-            <label className="flex items-center gap-2 text-sm text-dasza-navy/80"><input type="checkbox" name="packaging" /> Packaging</label>
-            <label className="flex items-center gap-2 text-sm text-dasza-navy/80"><input type="checkbox" name="insurance" /> Insurance</label>
-            <label className="text-sm text-dasza-navy/80">Other
-              <input name="other" placeholder="Other" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <div className="md:col-span-2 mt-6"><h3 className="font-display text-xl font-semibold pb-3 border-b border-dasza-line">Options</h3></div>
+            <label className="flex items-center gap-2 text-sm font-medium text-dasza-ink"><input type="checkbox" name="tracking" /> Tracking</label>
+            <label className="flex items-center gap-2 text-sm font-medium text-dasza-ink"><input type="checkbox" name="packaging" /> Packaging</label>
+            <label className="flex items-center gap-2 text-sm font-medium text-dasza-ink"><input type="checkbox" name="insurance" /> Insurance</label>
+            <label className="text-sm font-medium text-dasza-ink">Other
+              <input name="other" placeholder="Other" className="mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
 
             
-            <label className="text-sm text-dasza-navy/80 md:col-span-2">Additional details
-              <textarea name="comments" className="mt-1 border p-3 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+            <label className="text-sm font-medium text-dasza-ink md:col-span-2">Additional details
+              <textarea name="comments" className="mt-1.5 block w-full px-3.5 py-3 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
             </label>
 
-            <div className="md:col-span-2 text-center">
-              <button disabled={loading} className="px-8 py-3 rounded-full bg-dasza-cyan text-white hover:bg-dasza-cyan600">
-                {loading ? 'Submitting…' : 'Submit'}
+            <div className="md:col-span-2 pt-2">
+              <button disabled={loading} className="inline-flex items-center h-12 px-8 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 disabled:opacity-60 transition-colors">
+                {loading ? 'Sending…' : 'Send quote request'}
               </button>
             </div>
           </form>
-        </section>
+        </div></section>
       </main>
       <Modal open={Boolean(ok)} onClose={() => setOk(null)} title="Submitted" status="success">
         Your request was sent. Our team will contact you shortly at the email you provided.

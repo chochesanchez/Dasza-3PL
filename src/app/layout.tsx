@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Archivo } from "next/font/google";
 import "./globals.css";
 import Analytics from "@/components/shared/Analytics";
-import PageTransition from "@/components/ui/PageTransition";
-import ScrollProgress from "@/components/shared/ScrollProgress";
 import { SITE_URL } from "@/lib/site";
 
-const inter = Inter({
-  variable: "--font-geist-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
+  axes: ["wdth"],
+  display: "swap",
 });
 
 const organizationJsonLd = {
@@ -22,8 +22,9 @@ const organizationJsonLd = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Dasza 3PL | Supply Chain Solutions",
-  description: "Supply chain solutions for manufacturing in Mexico: IMMEX AAA warehousing, inventory control, intermodal via Manzanillo, Altamira & Veracruz.",
+  title: { default: "Dasza 3PL | IMMEX logistics for manufacturers in Mexico", template: "%s | Dasza 3PL" },
+  description: "Customs, bonded warehousing and freight for manufacturers in Mexico. DASZA imports under its IMMEX AAA program and delivers to your production line from Apodaca and Querétaro.",
+  openGraph: { type: "website", siteName: "Dasza 3PL", images: [{ url: "/images/site/port-aerial.jpg", width: 2000, height: 1333 }] },
   icons: {
     icon: "/favicon-2025.ico",
     shortcut: "/favicon-2025.ico",
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: '#00B4EF',
+  themeColor: '#1E2833',
 }
 
 export default function RootLayout({
@@ -42,10 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={archivo.variable}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
-        <ScrollProgress />
-        <PageTransition>{children}</PageTransition>
+        {children}
         <Analytics />
       </body>
     </html>

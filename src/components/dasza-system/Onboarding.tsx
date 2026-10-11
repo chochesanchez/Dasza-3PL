@@ -94,7 +94,7 @@ export default function Onboarding({ onComplete }: Props) {
         })}
       </ol>
 
-      <div className="rounded-2xl border border-dasza-gray/40 bg-white p-6 sm:p-8 shadow-sm">
+      <div className="rounded-lg border border-dasza-line bg-white p-6 sm:p-8">
         {step === 1 ? (
           <form onSubmit={nextStep} className="space-y-5">
             <div>
@@ -125,7 +125,7 @@ export default function Onboarding({ onComplete }: Props) {
               <input id="demo-website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
             </div>
             <div className="flex justify-end">
-              <button type="submit" className="px-6 py-2.5 rounded-full bg-dasza-navy text-white font-medium hover:bg-dasza-charcoal transition-colors">
+              <button type="submit" className="px-6 py-2.5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 transition-colors">
                 Continue
               </button>
             </div>
@@ -182,7 +182,7 @@ export default function Onboarding({ onComplete }: Props) {
               <button type="button" onClick={() => setStep(1)} className="px-4 py-2 rounded-full text-dasza-navy hover:bg-gray-100">
                 Back
               </button>
-              <button type="submit" disabled={submitting} className="px-6 py-2.5 rounded-full bg-dasza-navy text-white font-medium hover:bg-dasza-charcoal disabled:opacity-60 transition-colors">
+              <button type="submit" disabled={submitting} className="px-6 py-2.5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 disabled:opacity-60 transition-colors">
                 {submitting ? 'Preparing your demo…' : 'Start the guided tour'}
               </button>
             </div>
