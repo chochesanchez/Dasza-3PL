@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/services/fulfillment',
     '/quote',
     '/contact',
+    '/dasza-system',
     '/news',
   ].map((p) => ({ url: `${base}${p}`, lastModified: new Date() }))
 }

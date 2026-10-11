@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import Reveal from "@/components/ui/Reveal";
@@ -83,10 +84,15 @@ export default function Home() {
 
         {/* Dasza System information (moved below Services) */}
         <section className="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-2 gap-8 items-center">
-          <Image src="/images/Warehouse Technologies.png" alt="Dasza System" width={800} height={500} className="rounded-xl" />
+          <Link href="/dasza-system" className="group block rounded-xl overflow-hidden" aria-label="Open the Dasza System interactive demo">
+            <Image src="/images/Warehouse Technologies.png" alt="Dasza System" width={800} height={500} className="rounded-xl group-hover:scale-[1.02] transition-transform" />
+          </Link>
           <div className="text-dasza-navy text-center md:text-left">
             <h3 className="text-3xl md:text-4xl font-semibold">Dasza System Information</h3>
-            <p className="text-dasza-navy/80 mt-3">Our internal system tracks inventory, movements, KPIs, and documentation for each customer. Ask our team for a walkthrough.</p>
+            <p className="text-dasza-navy/80 mt-3">Our internal system tracks inventory, movements, KPIs, and documentation for each customer. Take a two-minute guided tour with sample data.</p>
+            <Link href="/dasza-system" className="inline-block mt-6 px-6 py-2.5 rounded-full bg-dasza-navy text-white font-medium hover:bg-dasza-charcoal transition-colors">
+              Try the interactive demo
+            </Link>
           </div>
         </section>
 
