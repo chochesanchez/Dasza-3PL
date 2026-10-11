@@ -4,13 +4,24 @@ import "./globals.css";
 import Analytics from "@/components/shared/Analytics";
 import PageTransition from "@/components/ui/PageTransition";
 import ScrollProgress from "@/components/shared/ScrollProgress";
+import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Dasza 3PL',
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/Dasza%20Logistics%20Logo%20Complete.png`,
+  contactPoint: [{ '@type': 'ContactPoint', telephone: '+52-81-1916-1086', email: 'jmsanchez@dasza.com', contactType: 'sales', areaServed: 'MX', availableLanguage: ['English', 'Spanish'] }],
+}
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Dasza 3PL | Supply Chain Solutions",
   description: "Supply chain solutions for manufacturing in Mexico: IMMEX AAA warehousing, inventory control, intermodal via Manzanillo, Altamira & Veracruz.",
   icons: {
@@ -32,6 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <ScrollProgress />
         <PageTransition>{children}</PageTransition>
         <Analytics />

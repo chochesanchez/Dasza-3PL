@@ -16,9 +16,13 @@ function str(v: unknown): string | undefined {
   return undefined
 }
 
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string)
+}
+
 export async function sendQuoteEmail(doc: QuoteDoc) {
   const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) return
+  if (!apiKey) throw new Error('RESEND_API_KEY is not configured')
   const resend = new Resend(apiKey)
   // Safely resolve company for subject line
   let subjectCompany = doc.company
@@ -47,7 +51,7 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
     v
       ? `<tr>
           <td width='180' style='width:180px;padding:6px 12px;color:#3E526C;font-weight:600;vertical-align:top;white-space:nowrap'>${k}</td>
-          <td style='padding:6px 12px;color:#3E526C;white-space:normal;word-break:break-word;overflow-wrap:break-word;'>${v}</td>
+          <td style='padding:6px 12px;color:#3E526C;white-space:normal;word-break:break-word;overflow-wrap:break-word;'>${escapeHtml(v)}</td>
         </tr>`
       : ''
   )
@@ -88,7 +92,7 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
         .join('')
     : ''
   const optionsHtml = optionsListItems
-    ? row('Options', `<ul style='margin:0;padding-left:18px'>${optionsListItems}</ul>`) 
+    ? `<tr><td width='180' style='width:180px;padding:6px 12px;color:#3E526C;font-weight:600;vertical-align:top;white-space:nowrap'>Options</td><td style='padding:6px 12px;color:#3E526C'><ul style='margin:0;padding-left:18px'>${optionsListItems}</ul></td></tr>`
     : ''
 
   // Interests can come from Contact form (typed safely)
@@ -115,8 +119,8 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
         ${section('Trade / Customs', tradeHtml)}
         ${section('Service Requirements', serviceHtml)}
         ${section('Options', optionsHtml)}
-        ${interests.length ? `<table width='100%' cellspacing='0' cellpadding='0' style='table-layout:fixed;margin-top:16px;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden'><tr><td colspan='2' style='background:#F8FAFC;padding:10px 12px;color:#3E526C;font-weight:700'>Interests</td></tr><tr><td width='180' style='width:180px;padding:6px 12px;color:#3E526C;font-weight:600;vertical-align:top;white-space:nowrap'>Interest</td><td style='padding:6px 12px;color:#3E526C;word-break:break-word;overflow-wrap:break-word;'><ul style='margin:0;padding-left:18px'>${interests.map(i=>`<li style='margin:0 0 4px 0'>${String(i)}</li>`).join('')}</ul></td></tr></table>` : ''}
-        ${comments ? `<div style='margin-top:16px;padding:12px;border:1px solid #E5E7EB;border-radius:12px'><div style='font-weight:700;margin-bottom:6px;color:#3E526C'>Comments</div><div style='color:#3E526C;word-break:break-word;overflow-wrap:anywhere;'>${comments.replace(/\n/g,'<br/>')}</div></div>` : ''}
+        ${interests.length ? `<table width='100%' cellspacing='0' cellpadding='0' style='table-layout:fixed;margin-top:16px;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden'><tr><td colspan='2' style='background:#F8FAFC;padding:10px 12px;color:#3E526C;font-weight:700'>Interests</td></tr><tr><td width='180' style='width:180px;padding:6px 12px;color:#3E526C;font-weight:600;vertical-align:top;white-space:nowrap'>Interest</td><td style='padding:6px 12px;color:#3E526C;word-break:break-word;overflow-wrap:break-word;'><ul style='margin:0;padding-left:18px'>${interests.map(i=>`<li style='margin:0 0 4px 0'>${escapeHtml(String(i))}</li>`).join('')}</ul></td></tr></table>` : ''}
+        ${comments ? `<div style='margin-top:16px;padding:12px;border:1px solid #E5E7EB;border-radius:12px'><div style='font-weight:700;margin-bottom:6px;color:#3E526C'>Comments</div><div style='color:#3E526C;word-break:break-word;overflow-wrap:anywhere;'>${escapeHtml(comments).replace(/\n/g,'<br/>')}</div></div>` : ''}
       </div>
     </div>
   </body>
@@ -144,14 +148,15 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
     comments ? `Comments: ${comments}` : '',
   ].filter(Boolean).join('\n')
 
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: `Dasza 3PL <${fromAddress}>`,
     to: ['jmsanchez@dasza.com'],
     subject: `New form submission — ${subjectCompany}`,
     text,
     html,
-    ...(replyTo ? { reply_to: replyTo } : {}),
+    ...(replyTo ? { replyTo } : {}),
   })
+  if (error) throw new Error(`Resend error: ${error.message}`)
 }
 
 

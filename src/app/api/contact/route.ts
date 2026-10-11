@@ -45,11 +45,8 @@ export async function POST(req: NextRequest) {
     if (!captchaOk) return NextResponse.json({ error: 'reCAPTCHA failed' }, { status: 400 })
     const parsed = quoteSchema.safeParse(body)
     if (!parsed.success) {
-      const issues = parsed.error.flatten()
-      console.error('Quote validation failed, sending anyway:', issues)
-      // Send email with raw body so submissions are not blocked
-      await sendQuoteEmail(body as any)
-      return NextResponse.json({ ok: true, validation: issues })
+      console.error('Contact/quote validation failed:', parsed.error.flatten())
+      return NextResponse.json({ error: 'Invalid form data' }, { status: 400 })
     }
     const { contact, product, trade, service, options, comments } = parsed.data
 
@@ -64,15 +61,15 @@ export async function POST(req: NextRequest) {
           phone: contact.phone,
           company: contact.company,
           address: contact.address,
-          product_type: product.type,
-          quantity: product.quantity,
-          volume: product.volume,
-          weight: product.weight,
-          photo_url: (product as any).photoUrl,
-          hs_code: trade.hsCode,
-          origin: trade.origin,
-          incoterm: trade.incoterm,
-          port: (trade as any).port,
+          product_type: product?.type,
+          quantity: product?.quantity,
+          volume: product?.volume,
+          weight: product?.weight,
+          photo_url: product?.photoUrl,
+          hs_code: trade?.hsCode,
+          origin: trade?.origin,
+          incoterm: trade?.incoterm,
+          port: trade?.port,
           frequency: service?.frequency,
           destinations: service?.destinations,
           storage_required: service?.storageRequired ?? false,
@@ -86,9 +83,10 @@ export async function POST(req: NextRequest) {
         .select()
       if (!sbError) inserted = sb?.[0]
     } catch {}
-    await sendQuoteEmail(inserted ?? parsed.data)
+    await sendQuoteEmail(parsed.data)
     return NextResponse.json({ ok: true, id: inserted?.id })
-  } catch {
+  } catch (err) {
+    console.error('Contact/quote submission failed:', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

@@ -1,11 +1,17 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   return [
     '',
     '/about',
     '/services',
+    '/services/warehousing',
+    '/services/vmi',
+    '/services/logistics',
+    '/services/customs',
+    '/services/sorting',
+    '/services/door-to-door',
     '/services/last-mile',
     '/services/storage',
     '/services/retail',
@@ -13,5 +19,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/quote',
     '/contact',
     '/news',
-  ].map((p) => ({ url: `${base}${p}`, lastModified: new Date() }))
+  ].map((p) => ({ url: `${SITE_URL}${p}`, lastModified: new Date() }))
 }

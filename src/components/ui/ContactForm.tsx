@@ -60,7 +60,7 @@ export default function ContactForm() {
       setOk(data.id || 'ok')
       ;(e.target as HTMLFormElement).reset()
     } else {
-      alert('Hubo un error. Intenta de nuevo.')
+      alert('Sorry, your message could not be sent. Please try again or contact us by WhatsApp.')
     }
   }
 
