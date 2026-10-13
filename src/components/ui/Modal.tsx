@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/react/24/solid'
 
 type Props = {
@@ -8,34 +8,38 @@ type Props = {
   title?: string
   children?: React.ReactNode
   status?: 'success' | 'info' | 'error'
+  closeLabel?: string
 }
 
-export default function Modal({ open, onClose, title, children, status = 'info' }: Props) {
+export default function Modal({ open, onClose, title, children, status = 'info', closeLabel = 'Close' }: Props) {
+  const closeRef = useRef<HTMLButtonElement | null>(null)
+
   useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
-  }, [open])
+    if (!open) return
+    document.body.style.overflow = 'hidden'
+    closeRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open, onClose])
 
   if (!open) return null
   const Icon = status === 'success' ? CheckCircleIcon : status === 'error' ? ExclamationTriangleIcon : InformationCircleIcon
-  const iconColor = status === 'success' ? 'text-dasza-cyan' : status === 'error' ? 'text-red-500' : 'text-dasza-cyan'
+  const iconColor = status === 'error' ? 'text-red-600' : 'text-dasza-cyan600'
   return (
-    <div className="fixed inset-0 z-[100] grid place-items-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-[88%] max-w-[360px] sm:max-w-md overflow-hidden rounded-2xl bg-white shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-        <div className="p-6 sm:p-7 text-center">
-          <div className="mx-auto mb-3 grid place-items-center">
-            <Icon className={`h-10 w-10 ${iconColor}`} aria-hidden />
-          </div>
-          {title && <div className="text-lg sm:text-xl font-semibold text-dasza-navy mb-1">{title}</div>}
-          <div className="text-dasza-navy/90 text-sm leading-relaxed">{children}</div>
-          <div className="mt-6">
-            <button onClick={onClose} className="w-full sm:w-auto px-5 py-2 rounded-full bg-dasza-cyan text-white font-medium hover:bg-dasza-cyan600">Close</button>
-          </div>
-        </div>
+    <div className="fixed inset-0 z-[100] grid place-items-center p-4">
+      <div className="absolute inset-0 bg-dasza-ink/60" onClick={onClose} />
+      <div role="dialog" aria-modal="true" aria-labelledby="modal-title" className="relative w-full max-w-md rounded-lg bg-white p-7 shadow-2xl">
+        <Icon className={`h-9 w-9 ${iconColor}`} aria-hidden />
+        {title && <h2 id="modal-title" className="mt-4 font-display text-2xl font-semibold text-dasza-ink">{title}</h2>}
+        <div className="mt-2 text-dasza-navy leading-relaxed">{children}</div>
+        <button ref={closeRef} onClick={onClose} className="mt-6 inline-flex items-center h-11 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600">
+          {closeLabel}
+        </button>
       </div>
     </div>
   )
 }
-
-

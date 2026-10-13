@@ -1,41 +1,49 @@
 import { z } from 'zod'
 
+// Form fields arrive from FormData, so absent inputs are `null` — accept null/undefined everywhere.
+const text = z.string().trim().max(5000).nullish()
+
 export const quoteSchema = z.object({
   contact: z.object({
-    name: z.string().optional(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    company: z.string().optional(),
-    address: z.string().optional(),
-    title: z.string().optional(),
-  }).partial(),
+    name: text,
+    email: z.email().max(200),
+    phone: text,
+    company: text,
+    address: text,
+    title: text,
+    postalCode: text,
+    website: text,
+    phoneCountry: text,
+    location: text,
+  }),
   product: z.object({
-    type: z.string().optional(),
-    quantity: z.coerce.number().optional(),
-    volume: z.string().optional(),
-    weight: z.string().optional(),
-    photoUrl: z.string().optional()
-  }).partial(),
+    type: text,
+    quantity: z.coerce.number().nullish(),
+    volume: text,
+    weight: text,
+    photoUrl: text,
+    photos: z.array(z.object({ name: z.string(), type: z.string().optional(), size: z.number().optional() })).nullish(),
+  }).partial().optional(),
   trade: z.object({
-    hsCode: z.string().optional(),
-    origin: z.string().optional(),
-    incoterm: z.string().optional(),
-    port: z.string().optional()
-  }).partial(),
+    hsCode: text,
+    origin: text,
+    incoterm: text,
+    port: text,
+  }).partial().optional(),
   service: z.object({
-    frequency: z.string().optional(),
-    destinations: z.string().optional(),
+    frequency: text,
+    destinations: text,
     storageRequired: z.coerce.boolean().optional().default(false),
     conditions: z.array(z.string()).optional().default([]),
-    timing: z.string().optional()
+    timing: text,
   }).optional(),
   options: z.object({
     tracking: z.boolean().optional(),
     packaging: z.boolean().optional(),
     insurance: z.boolean().optional(),
-    other: z.string().optional()
+    other: text,
   }).partial().optional(),
-  comments: z.string().optional()
+  interests: z.array(z.string().max(200)).max(50).optional(),
+  comments: text,
+  captchaToken: z.string().optional(),
 })
-
-

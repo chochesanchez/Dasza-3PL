@@ -1,17 +1,19 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/site'
+import { SERVICES } from '@/content/site'
+import { localePath } from '@/i18n/config'
+
+const PATHS = ['/', '/about', '/services', ...SERVICES.map((s) => `/services/${s.slug}`), '/dasza-system', '/quote', '/contact', '/news']
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  return [
-    '',
-    '/about',
-    '/services',
-    '/services/last-mile',
-    '/services/storage',
-    '/services/retail',
-    '/services/fulfillment',
-    '/quote',
-    '/contact',
-    '/news',
-  ].map((p) => ({ url: `${base}${p}`, lastModified: new Date() }))
+  return PATHS.map((p) => ({
+    url: `${SITE_URL}${localePath('en', p) === '/' ? '' : localePath('en', p)}`,
+    lastModified: new Date(),
+    alternates: {
+      languages: {
+        en: `${SITE_URL}${localePath('en', p) === '/' ? '' : localePath('en', p)}`,
+        es: `${SITE_URL}${localePath('es', p)}`,
+      },
+    },
+  }))
 }

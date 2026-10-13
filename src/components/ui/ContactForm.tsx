@@ -1,158 +1,195 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
+import { PHONE_COUNTRIES, WHATSAPP_NUMBER } from '@/lib/phoneCountries'
+import { COMPANY } from '@/content/site'
+import { useI18n } from '@/i18n/I18nProvider'
+import { fmt } from '@/i18n/dictionaries'
+
+const inputCls =
+  'mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan'
 
 export default function ContactForm() {
+  const { t } = useI18n()
+  const f = t.form
   const [loading, setLoading] = useState(false)
-  const [ok, setOk] = useState<string | null>(null)
-  const [open, setOpen] = useState(false)
-  const options = [
-    'Warehousing - Dedicated','Warehousing - Shared','Warehousing - Short Term','Warehousing - Refrigerated / Frozen',
-    'Transportation - Dedicated','Transportation - Transportation Management','Transportation - Freight Brokerage','Transportation - Inbound and/or Outbound',
-    'Fulfillment - E-commerce','Fulfillment - Retail','Fulfillment - Wholesale','Last Mile Delivery',
-    'Sign Up to be a Carrier','Co-Packaging','Lease & Maintenance','Used Trucks','Rent Trucks','Other',
-  ] as const
+  const [ok, setOk] = useState(false)
+  const [failedMessage, setFailedMessage] = useState<string | null>(null)
   const [selected, setSelected] = useState<string[]>([])
-  const selectRef = useRef<HTMLDivElement | null>(null)
-  const toggle = (opt: string) => setSelected((s)=> s.includes(opt) ? s.filter(x=>x!==opt) : [...s, opt])
-
-  // Close the dropdown on outside click or ESC
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (!open) return
-      const t = e.target as Node
-      if (selectRef.current && !selectRef.current.contains(t)) setOpen(false)
-    }
-    function onEsc(e: KeyboardEvent) {
-      if (open && e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', onDocClick)
-    document.addEventListener('keydown', onEsc)
-    return () => {
-      document.removeEventListener('mousedown', onDocClick)
-      document.removeEventListener('keydown', onEsc)
-    }
-  }, [open])
+  const toggle = (opt: string) => setSelected((s) => (s.includes(opt) ? s.filter((x) => x !== opt) : [...s, opt]))
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const formData = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    const fd = new FormData(form)
+    if (fd.get('website')) return // honeypot
+    const country = PHONE_COUNTRIES.find((c) => c.code === fd.get('phoneCountry')) ?? PHONE_COUNTRIES[0]
+    const phone = `${country.dial} ${String(fd.get('phone') || '').trim()}`.trim()
+    const name = String(fd.get('name') || '').trim()
+    const email = String(fd.get('email') || '').trim()
+    const company = String(fd.get('company') || '').trim()
+    const message = String(fd.get('message') || '').trim()
     const payload = {
-      contact: {
-        name: `${formData.get('firstName') ?? ''} ${formData.get('lastName') ?? ''}`.trim() || String(formData.get('name')||'') ,
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        company: formData.get('company'),
-        title: formData.get('title'),
-        postalCode: formData.get('postalCode'),
-        address: undefined,
-      },
-      // Keep product/trade empty for Contact – email template handles missing sections gracefully
+      contact: { name, email, phone, company, phoneCountry: country.label },
       interests: selected,
-      comments: String(formData.get('message')||'').trim() || undefined,
+      comments: message || undefined,
     }
+
     setLoading(true)
-    const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    setFailedMessage(null)
+    let sent = false
+    try {
+      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      sent = res.ok
+    } catch {
+      sent = false
+    }
     setLoading(false)
-    if (res.ok) {
-      const data = await res.json()
-      setOk(data.id || 'ok')
-      ;(e.target as HTMLFormElement).reset()
+
+    if (sent) {
+      setOk(true)
+      setSelected([])
+      form.reset()
     } else {
-      alert('Hubo un error. Intenta de nuevo.')
+      // Keep the form filled and give the visitor a one-click way to still reach us.
+      setFailedMessage(
+        [
+          `${f.waHello} ${name}${company ? ` ${f.waFrom} ${company}` : ''}.`,
+          selected.length ? `${f.waInterested} ${selected.join(', ')}.` : '',
+          message,
+          fmt(f.waContact, { email, phone }),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      )
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {ok && <div className="md:col-span-2 text-green-600">Thank you! We received your message.</div>}
-      <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 rounded-2xl border border-dasza-gray/30 bg-white p-6 shadow-sm space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-            <label className="text-sm text-dasza-navy/80">First name*
-              <input name="firstName" placeholder="First name" required className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <label className="text-sm text-dasza-navy/80">Last name*
-              <input name="lastName" placeholder="Last name" required className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <label className="text-sm text-dasza-navy/80">Email address*
-              <input name="email" type="email" placeholder="Email address" required className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <label className="text-sm text-dasza-navy/80">Phone
-              <input name="phone" placeholder="Phone" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <label className="text-sm text-dasza-navy/80">Postal code
-              <input name="postalCode" placeholder="Postal code" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <label className="text-sm text-dasza-navy/80">Company
-              <input name="company" placeholder="Company" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <label className="text-sm text-dasza-navy/80">Title
-              <input name="title" placeholder="Title" className="mt-1 border p-3 rounded-xl w-full h-11 focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
-            </label>
-            <div ref={selectRef} className="relative">
-              <label className="text-sm text-dasza-navy/80 block">Which solution(s) are you interested in?</label>
-              <button
-                type="button"
-                onClick={()=>setOpen(!open)}
-                className="mt-1 w-full h-11 border rounded-xl bg-white px-3 text-left text-sm text-dasza-navy focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan flex items-center overflow-hidden whitespace-nowrap text-ellipsis"
-              >
-                <span className={selected.length ? '' : 'text-dasza-navy/50'}>
-                  {selected.length ? `${selected.length} selected` : 'Select solutions'}
-                </span>
-              </button>
-              {open && (
-                <div className="absolute z-40 mt-2 w-full rounded-xl border bg-white shadow-lg p-3 max-h-64 overflow-auto">
-                  {options.map((opt) => (
-                    <label key={opt} className="flex items-center gap-2 py-2 text-sm">
-                      <input type="checkbox" name="interest" value={opt} checked={selected.includes(opt)} onChange={()=>toggle(opt)} /> {opt}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <label className="text-sm text-dasza-navy/80">How can we help you?
-            <textarea name="message" placeholder="Tell us about your current business needs" className="mt-1 border p-3 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+    <form onSubmit={onSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      <div className="lg:col-span-2 rounded-lg border border-dasza-line bg-white p-6 sm:p-8 space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5 items-start">
+          <label className="text-sm font-medium text-dasza-ink">
+            {f.name}*
+            <input name="name" autoComplete="name" placeholder={f.namePh} required minLength={2} className={inputCls} />
           </label>
-          <div className="text-center mt-4">
-            <button disabled={loading} className="px-8 py-3 rounded-full bg-dasza-cyan text-white hover:bg-dasza-cyan600">
-              {loading ? 'Sending…' : 'Send'}
-            </button>
+          <label className="text-sm font-medium text-dasza-ink">
+            {f.email}*
+            <input name="email" type="email" autoComplete="email" placeholder="you@company.com" required className={inputCls} />
+          </label>
+          <div className="text-sm font-medium text-dasza-ink">
+            <label htmlFor="contact-phone">{f.phone}*</label>
+            <div className="mt-1.5 flex gap-2">
+              <select name="phoneCountry" aria-label={f.countryCode} defaultValue="MX" className="h-12 border border-dasza-line rounded-md px-2 bg-white focus:outline-none focus:ring-2 focus:ring-dasza-cyan">
+                {PHONE_COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>{c.code === 'OTHER' ? f.other : `${c.code} ${c.dial}`}</option>
+                ))}
+              </select>
+              <input
+                id="contact-phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel-national"
+                placeholder={f.phonePh}
+                required
+                minLength={7}
+                className="flex-1 min-w-0 h-12 px-3.5 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan"
+              />
+            </div>
           </div>
+          <label className="text-sm font-medium text-dasza-ink">
+            {f.company}
+            <input name="company" autoComplete="organization" placeholder={f.company} className={inputCls} />
+          </label>
         </div>
-        <aside className="rounded-2xl border border-dasza-gray/30 bg-white p-6 shadow-sm text-sm">
-          <div className="text-lg font-semibold text-dasza-navy">Get in Touch</div>
-          <p className="mt-2 text-dasza-navy/80">We usually respond within one business day.</p>
-          <div className="mt-4 space-y-6 text-dasza-navy/80">
-            <div className="flex items-start gap-3">
-              <MapPinIcon className="h-7 w-7 text-dasza-cyan flex-none" />
-              <div>
-                <div className="font-medium text-dasza-navy">Address</div>
-                <div>GDS Business Park, Av. Miguel Alemán 762, El Milagro, 66634 Cdad. Apodaca, N.L.</div>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <PhoneIcon className="h-7 w-7 text-dasza-cyan flex-none" />
-              <div>
-                <div className="font-medium text-dasza-navy">Phone</div>
-                <a href="tel:+528119161086" className="hover:text-dasza-cyan">+52 811916 1086</a>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <EnvelopeIcon className="h-7 w-7 text-dasza-cyan flex-none" />
-              <div>
-                <div className="font-medium text-dasza-navy">Email</div>
-                <a href="mailto:jmsanchez@dasza.com" className="hover:text-dasza-cyan">jmsanchez@dasza.com</a>
-              </div>
-            </div>
-            <a href="https://www.google.com/maps/place/GDS+Business+Park/@25.7595496,-100.1962086,967m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8662eb930eb5389b:0xa6c6f4ff0b1622c8!8m2!3d25.7595496!4d-100.1962086!16s%2Fg%2F11c424kch_?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" className="inline-block px-4 py-2 rounded-lg border border-dasza-cyan text-dasza-cyan hover:bg-dasza-cyan hover:text-white">Open in Google Maps</a>
+
+        <fieldset>
+          <legend className="text-sm font-medium text-dasza-ink">{f.need}</legend>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {f.solutions.map((opt) => {
+              const on = selected.includes(opt)
+              return (
+                <button
+                  type="button"
+                  key={opt}
+                  aria-pressed={on}
+                  onClick={() => toggle(opt)}
+                  className={`h-9 px-3.5 rounded-md border text-sm transition-colors ${on ? 'bg-dasza-ink border-dasza-ink text-white' : 'border-dasza-line text-dasza-ink hover:border-dasza-ink'}`}
+                >
+                  {opt}
+                </button>
+              )
+            })}
           </div>
-        </aside>
+        </fieldset>
+
+        <label className="block text-sm font-medium text-dasza-ink">
+          {f.message}
+          <textarea
+            name="message"
+            rows={3}
+            placeholder={f.messagePh}
+            className="mt-1.5 block w-full px-3.5 py-3 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan"
+          />
+        </label>
+
+        {/* Honeypot — hidden from people, filled by bots */}
+        <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden />
+
+        {failedMessage && (
+          <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            <p className="font-medium">{f.failTitle}</p>
+            <p className="mt-1">{f.failText}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(failedMessage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-medium hover:brightness-95"
+              >
+                {f.viaWhatsapp}
+              </a>
+              <a
+                href={`mailto:${COMPANY.email}?subject=${encodeURIComponent(f.emailSubject)}&body=${encodeURIComponent(failedMessage)}`}
+                className="inline-flex items-center h-10 px-4 rounded-md border border-red-300 text-red-800 hover:bg-red-100"
+              >
+                {f.viaEmail}
+              </a>
+            </div>
+          </div>
+        )}
+
+        <div className="pt-1">
+          <button disabled={loading} className="inline-flex items-center h-12 px-8 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 disabled:opacity-60 transition-colors">
+            {loading ? f.sending : f.send}
+          </button>
+        </div>
       </div>
-      <Modal open={Boolean(ok)} onClose={() => setOk(null)} title="Submitted" status="success">
-        Your message was sent. Our team will contact you shortly.
+
+      <aside className="rounded-lg bg-dasza-ink text-white p-6 sm:p-8 text-sm flex flex-col">
+        <h3 className="font-display text-xl font-semibold">{f.asideTitle}</h3>
+        <dl className="mt-6 space-y-5">
+          <div className="flex gap-3">
+            <PhoneIcon className="h-5 w-5 mt-0.5 text-dasza-cyan shrink-0" aria-hidden />
+            <div><dt className="text-white/60">{f.asidePhone}</dt><dd><a href={COMPANY.phoneHref} className="hover:text-dasza-cyan whitespace-nowrap">{COMPANY.phone}</a></dd></div>
+          </div>
+          <div className="flex gap-3">
+            <EnvelopeIcon className="h-5 w-5 mt-0.5 text-dasza-cyan shrink-0" aria-hidden />
+            <div><dt className="text-white/60">{f.asideEmail}</dt><dd><a href={`mailto:${COMPANY.email}`} className="hover:text-dasza-cyan">{COMPANY.email}</a></dd></div>
+          </div>
+          <div className="flex gap-3">
+            <MapPinIcon className="h-5 w-5 mt-0.5 text-dasza-cyan shrink-0" aria-hidden />
+            <div><dt className="text-white/60">{f.asideOffice}</dt><dd className="leading-relaxed">{COMPANY.office}</dd></div>
+          </div>
+        </dl>
+        <div className="mt-auto pt-8 flex flex-wrap gap-2">
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-semibold">{f.asideWhatsapp}</a>
+          <a href={COMPANY.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md border border-white/30 hover:border-white">{f.asideMaps}</a>
+        </div>
+      </aside>
+      <Modal open={ok} onClose={() => setOk(false)} title={f.sentTitle} status="success" closeLabel={t.common.close}>
+        {f.sentText}
       </Modal>
     </form>
   )
