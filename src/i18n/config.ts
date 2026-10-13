@@ -12,10 +12,15 @@ export function localePath(lang: Lang, path: string) {
   return clean === '/' ? '/es' : `/es${clean}`
 }
 
-/** Strips the "/es" prefix from a visible pathname to get the English path. */
+/**
+ * Strips the language prefix to get the English path. Handles "/es/..." (visible URL) and
+ * "/en/..." (the internal path English pages are prerendered at), so server and browser agree.
+ */
 export function basePath(pathname: string) {
-  if (pathname === '/es') return '/'
-  if (pathname.startsWith('/es/')) return pathname.slice(3)
+  for (const prefix of ['/es', '/en']) {
+    if (pathname === prefix) return '/'
+    if (pathname.startsWith(`${prefix}/`)) return pathname.slice(prefix.length)
+  }
   return pathname || '/'
 }
 

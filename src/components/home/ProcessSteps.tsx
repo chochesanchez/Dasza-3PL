@@ -6,9 +6,11 @@ import { PROCESS_IMAGES } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
 
 const HEADER = 72
+// Scroll distance per step while pinned: one mouse-wheel notch (100px) moves one step.
+const STEP_PX = 100
 
-// Desktop: the section pins and each scroll gesture (wheel/trackpad flick) moves exactly one step.
-// Past the first or last step, the page scrolls normally. Tapping a step jumps to it.
+// Desktop: the section pins while you scroll; every STEP_PX of normal scrolling advances one step.
+// Scrolling is never intercepted. Tapping a step scrolls to it.
 // Phones / reduced motion: a plain list you tap to open each step.
 export default function ProcessSteps() {
   const { t } = useI18n()
@@ -33,7 +35,7 @@ export default function ProcessSteps() {
     return () => mq.removeEventListener('change', update)
   }, [reduce])
 
-  const { scrollYProgress } = useScroll({ target: outer, offset: ['start start', 'end end'] })
+  const { scrollYProgress } = useScroll({ target: outer, offset: [`start ${HEADER}px`, 'end end'] })
   const progress = useSpring(scrollYProgress, { stiffness: 160, damping: 30 })
 
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
@@ -42,62 +44,22 @@ export default function ProcessSteps() {
     if (i !== activeRef.current) setStep(i)
   })
 
-  const scrollToStep = useCallback(
-    (i: number) => {
-      const el = outer.current
-      if (!el) return
-      const top = el.getBoundingClientRect().top + window.scrollY
-      const travel = el.offsetHeight - (window.innerHeight - HEADER)
-      window.scrollTo({ top: top - HEADER + ((i + 0.5) / N) * travel, behavior: 'smooth' })
-    },
-    [N],
-  )
+  const scrollToStep = useCallback((i: number) => {
+    const el = outer.current
+    if (!el) return
+    const pinStart = el.getBoundingClientRect().top + window.scrollY - HEADER
+    window.scrollTo({ top: pinStart + i * STEP_PX + STEP_PX / 2, behavior: 'smooth' })
+  }, [])
 
   const goTo = (i: number) => {
     setStep(i)
     if (pinned) scrollToStep(i)
   }
 
-  // One step per wheel gesture while pinned. Trackpad momentum is absorbed until the wheel goes quiet.
-  useEffect(() => {
-    if (!pinned) return
-    let locked = false
-    let unlockAfter = 0
-    let quiet: ReturnType<typeof setTimeout> | undefined
-    const release = () => {
-      const wait = unlockAfter - performance.now()
-      if (wait > 0) quiet = setTimeout(release, wait)
-      else locked = false
-    }
-    const onWheel = (e: WheelEvent) => {
-      const el = outer.current
-      if (!el || Math.abs(e.deltaY) < 2) return
-      const r = el.getBoundingClientRect()
-      const inPin = r.top <= HEADER + 4 && r.bottom >= window.innerHeight - 4
-      if (!inPin) return
-      const dir = e.deltaY > 0 ? 1 : -1
-      const next = activeRef.current + dir
-      if (!locked && (next < 0 || next >= N)) return // let the page continue past the section
-      e.preventDefault()
-      clearTimeout(quiet)
-      quiet = setTimeout(release, 140)
-      if (locked) return
-      locked = true
-      unlockAfter = performance.now() + 420
-      setStep(next)
-      scrollToStep(next)
-    }
-    window.addEventListener('wheel', onWheel, { passive: false })
-    return () => {
-      window.removeEventListener('wheel', onWheel)
-      clearTimeout(quiet)
-    }
-  }, [pinned, N, scrollToStep, setStep])
-
   const step = steps[active]
 
   return (
-    <div ref={outer} className={pinned ? 'relative h-[340vh]' : 'relative'}>
+    <div ref={outer} className="relative" style={pinned ? { height: `calc(100vh - ${HEADER}px + ${N * STEP_PX}px)` } : undefined}>
       <div className={pinned ? 'sticky top-[72px] h-[calc(100vh-72px)] flex flex-col justify-center' : ''}>
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
           <div className="max-w-2xl mb-8 lg:mb-10">
