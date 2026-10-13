@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
+import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { usePathname } from 'next/navigation'
 import { COMPANY, SERVICES, CERTIFICATIONS } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -21,14 +22,13 @@ export default function Footer() {
               <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05] max-w-2xl">{t.footer.ctaTitle}</h2>
               <p className="mt-4 text-white/70 max-w-xl">{t.footer.ctaText}</p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link href={href('/quote')} className="inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
-                {t.common.getQuote}
-              </Link>
-              <a href={COMPANY.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-12 px-6 rounded-md border border-white/30 hover:border-white transition-colors">
-                {t.common.whatsapp}
-              </a>
-            </div>
+            <Link
+              href={href('/contact')}
+              className="group inline-flex items-center justify-center gap-3 h-16 px-10 rounded-md bg-dasza-cyan text-dasza-ink text-lg font-semibold hover:bg-white transition-colors w-full md:w-auto"
+            >
+              {t.footer.ctaButton}
+              <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden />
+            </Link>
           </div>
         </div>
       )}
