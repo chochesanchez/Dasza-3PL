@@ -15,10 +15,10 @@ export const COMPANY = {
 }
 
 // Headline facts. "17+ years" is the long-standing website claim (not in the documents) — confirm before changing.
-export const FACTS = [
+export const FACTS: { value: string; unit: string; label: string; static?: boolean }[] = [
   { value: '240,000', unit: 'sq ft', label: 'of warehouse space in Apodaca and Querétaro' },
   { value: '3', unit: 'warehouses', label: 'plus a customs office in Manzanillo' },
-  { value: '6078', unit: '', label: 'our own customs broker license' },
+  { value: '6078', unit: '', label: 'our own customs broker license', static: true },
   { value: '17+', unit: 'years', label: 'running supply chains for manufacturers' },
 ]
 
@@ -281,40 +281,40 @@ export const GATEWAYS = [
   { name: 'Altamira, Lázaro Cárdenas, Laredo', text: 'Operated with long-standing partners.' },
 ]
 
-// Client logos. Magna was removed: the documents show DASZA's client is Magnesitas Navarras (logo kept below).
+// Client logos — same list and order as the original site.
 export const CLIENT_LOGOS: { name: string; src: string }[] = [
-  { name: 'Whirlpool', src: 'Whirlpool Logo copy.png' },
-  { name: 'Embraco', src: 'Embraco Logo copy.png' },
+  { name: 'Carrier', src: 'Carrier Corporation Logo.png' },
+  { name: 'Magna', src: 'Magna Logo.png' },
+  { name: 'US Motors', src: 'US Motors Logo.webp' },
+  { name: 'RXN', src: 'RXN logo.png' },
+  { name: 'Regal Beloit', src: 'Regal Beloit Logo.png' },
+  { name: 'Fluidmaster', src: 'fluidmaster logo.png' },
+  { name: 'Tuopu', src: 'Tuopu Group Logo.jpeg' },
+  { name: 'Superior Industries', src: 'superior industries logo.png' },
+  { name: 'Dubal', src: 'Dubai Logo Dark.png' },
+  { name: 'Dometic', src: 'Dometic Logo.webp' },
+  { name: 'ERD Metal', src: 'erd-metal-canada logo.png' },
+  { name: 'NSK', src: 'NSK Japan Logo.webp' },
+  { name: 'MotoRad', src: 'MotoRad Logo.webp' },
+  { name: 'Metalsa', src: 'Metalsa Logo.avif' },
+  { name: 'Pilgrim’s', src: 'Pilgrims Logo.png' },
+  { name: 'Munters', src: 'Munters Logo.webp' },
+  { name: 'Ternium', src: 'Ternium Logo.png' },
+  { name: 'Magnesitas Navarras', src: 'Magnesitas Logo.png' },
+  { name: 'Mitsuba', src: 'Mitsuba Corporation Logo.png' },
+  { name: 'Elematec', src: 'elematec logo.gif' },
   { name: 'Daimler Truck', src: 'Daimler Trucks Logo.png' },
   { name: 'ConMet', src: 'Conmet Logo.png' },
   { name: 'Toyota', src: 'Toyota Logo.png' },
-  { name: 'Metalsa', src: 'Metalsa Logo.avif' },
-  { name: 'Ternium', src: 'Ternium Logo.png' },
-  { name: 'Magnesitas Navarras', src: 'Magnesitas Logo.png' },
-  { name: 'NSK', src: 'NSK Japan Logo.webp' },
-  { name: 'Dometic', src: 'Dometic Logo.webp' },
-  { name: 'ERD Metal', src: 'erd-metal-canada logo.png' },
-  { name: 'Superior Industries', src: 'superior industries logo.png' },
-  { name: 'Regal Beloit', src: 'Regal Beloit Logo.png' },
-  { name: 'US Motors', src: 'US Motors Logo.webp' },
-  { name: 'Fluidmaster', src: 'fluidmaster logo.png' },
-  { name: 'Munters', src: 'Munters Logo.webp' },
-  { name: 'Mitsuba', src: 'Mitsuba Corporation Logo.png' },
-  { name: 'Elematec', src: 'elematec logo.gif' },
-  { name: 'Carrier', src: 'Carrier Corporation Logo.png' },
-  { name: 'Tuopu', src: 'Tuopu Group Logo.jpeg' },
-  { name: 'Rockwell Automation', src: 'Rockwell Automation Logo copy.jpg' },
-  { name: 'Celestica', src: 'Celestica Logo copy.png' },
-  { name: 'Sanmina', src: 'sanminalogo copy.png' },
-  { name: 'MotoRad', src: 'MotoRad Logo.webp' },
-  { name: 'Dubal', src: 'Dubai Logo Dark.png' },
-  // Below: shown on the previous site but not found in DASZA's documents — confirm before keeping.
-  { name: 'Office Depot', src: 'Office Depot Logo copy.webp' },
-  { name: 'RXN', src: 'RXN logo.png' },
-  { name: 'Pilgrim’s', src: 'Pilgrims Logo.png' },
-  { name: 'Walmart', src: 'Walmart Logo 2008 copy.png' },
+  { name: 'Whirlpool', src: 'Whirlpool Logo copy.png' },
   { name: 'Soriana', src: 'Soriana Logo copy.webp' },
+  { name: 'Walmart', src: 'Walmart Logo 2008 copy.png' },
   { name: 'BBVA', src: 'bbvalogo copy.png' },
+  { name: 'Celestica', src: 'Celestica Logo copy.png' },
+  { name: 'Office Depot', src: 'Office Depot Logo copy.webp' },
+  { name: 'Embraco', src: 'Embraco Logo copy.png' },
+  { name: 'Sanmina', src: 'sanminalogo copy.png' },
+  { name: 'Rockwell Automation', src: 'Rockwell Automation Logo copy.jpg' },
 ]
 
 export const logoSrc = (file: string) => encodeURI(`/images/Trusted By logos/${file}`)
