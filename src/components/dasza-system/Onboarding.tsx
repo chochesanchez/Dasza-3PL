@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { CheckIcon } from '@heroicons/react/24/solid'
 import { MATERIALS, type MaterialId } from './demoData'
+import { useI18n } from '@/i18n/I18nProvider'
 
 export type Visitor = {
   name: string
@@ -19,6 +20,8 @@ const inputCls =
   'w-full rounded-lg border border-dasza-gray/60 px-3 py-2.5 text-dasza-charcoal placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan'
 
 export default function Onboarding({ onComplete }: Props) {
+  const { t } = useI18n()
+  const d = t.demo
   const [step, setStep] = useState<1 | 2>(1)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -46,7 +49,7 @@ export default function Onboarding({ onComplete }: Props) {
   async function finish(e: React.FormEvent) {
     e.preventDefault()
     if (v.materials.length === 0 && !v.otherMaterial.trim()) {
-      setError('Select at least one material type (or describe it under “Other”).')
+      setError(d.materialError)
       return
     }
     setError(null)
@@ -70,12 +73,8 @@ export default function Onboarding({ onComplete }: Props) {
   return (
     <div className="mx-auto max-w-2xl">
       {/* Progress */}
-      <ol className="flex items-center gap-3 mb-8 text-sm" aria-label="Onboarding progress">
-        {[
-          { n: 1, label: 'Your details' },
-          { n: 2, label: 'Your materials' },
-          { n: 3, label: 'Guided tour' },
-        ].map((s, i) => {
+      <ol className="flex items-center gap-3 mb-8 text-sm" aria-label={d.progress}>
+        {d.steps.map((label, i) => ({ n: i + 1, label })).map((s, i) => {
           const done = step > s.n
           const current = step === s.n
           return (
@@ -98,24 +97,24 @@ export default function Onboarding({ onComplete }: Props) {
         {step === 1 ? (
           <form onSubmit={nextStep} className="space-y-5">
             <div>
-              <h2 className="text-2xl font-semibold text-dasza-navy">Let’s set up your demo</h2>
-              <p className="text-dasza-navy/70 mt-1">We’ll personalize the walkthrough with your company name. A specialist may reach out to answer questions.</p>
+              <h2 className="text-2xl font-semibold text-dasza-navy">{d.s1Title}</h2>
+              <p className="text-dasza-navy/70 mt-1">{d.s1Text}</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="demo-name" className="block text-sm font-medium text-dasza-navy mb-1">Full name *</label>
+                <label htmlFor="demo-name" className="block text-sm font-medium text-dasza-navy mb-1">{d.name} *</label>
                 <input id="demo-name" required minLength={2} autoComplete="name" className={inputCls} value={v.name} onChange={(e) => set('name', e.target.value)} />
               </div>
               <div>
-                <label htmlFor="demo-company" className="block text-sm font-medium text-dasza-navy mb-1">Company</label>
+                <label htmlFor="demo-company" className="block text-sm font-medium text-dasza-navy mb-1">{d.company}</label>
                 <input id="demo-company" autoComplete="organization" className={inputCls} value={v.company} onChange={(e) => set('company', e.target.value)} />
               </div>
               <div>
-                <label htmlFor="demo-email" className="block text-sm font-medium text-dasza-navy mb-1">Work email *</label>
+                <label htmlFor="demo-email" className="block text-sm font-medium text-dasza-navy mb-1">{d.email} *</label>
                 <input id="demo-email" type="email" required autoComplete="email" className={inputCls} value={v.email} onChange={(e) => set('email', e.target.value)} />
               </div>
               <div>
-                <label htmlFor="demo-phone" className="block text-sm font-medium text-dasza-navy mb-1">Phone *</label>
+                <label htmlFor="demo-phone" className="block text-sm font-medium text-dasza-navy mb-1">{d.phone} *</label>
                 <input id="demo-phone" type="tel" required minLength={7} autoComplete="tel" placeholder="+52 81 0000 0000" className={inputCls} value={v.phone} onChange={(e) => set('phone', e.target.value)} />
               </div>
             </div>
@@ -126,18 +125,18 @@ export default function Onboarding({ onComplete }: Props) {
             </div>
             <div className="flex justify-end">
               <button type="submit" className="px-6 py-2.5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 transition-colors">
-                Continue
+                {d.continue}
               </button>
             </div>
           </form>
         ) : (
           <form onSubmit={finish} className="space-y-5">
             <div>
-              <h2 className="text-2xl font-semibold text-dasza-navy">What do you store?</h2>
-              <p className="text-dasza-navy/70 mt-1">Select all that apply. We’ll fill the demo with sample items of the same type.</p>
+              <h2 className="text-2xl font-semibold text-dasza-navy">{d.s2Title}</h2>
+              <p className="text-dasza-navy/70 mt-1">{d.s2Text}</p>
             </div>
             <fieldset>
-              <legend className="sr-only">Material types</legend>
+              <legend className="sr-only">{d.materialTypes}</legend>
               <div className="grid sm:grid-cols-2 gap-3">
                 {MATERIALS.map((m) => {
                   const on = v.materials.includes(m.id)
@@ -152,10 +151,10 @@ export default function Onboarding({ onComplete }: Props) {
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-medium text-dasza-navy">{m.label}</span>
+                        <span className="font-medium text-dasza-navy">{d.materials[m.id].label}</span>
                         {on && <CheckIcon className="h-5 w-5 text-dasza-navy" aria-hidden />}
                       </div>
-                      <div className="text-xs text-dasza-navy/60 mt-0.5">{m.hint}</div>
+                      <div className="text-xs text-dasza-navy/60 mt-0.5">{d.materials[m.id].hint}</div>
                     </button>
                   )
                 })}
@@ -163,30 +162,28 @@ export default function Onboarding({ onComplete }: Props) {
             </fieldset>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="demo-other" className="block text-sm font-medium text-dasza-navy mb-1">Other (optional)</label>
+                <label htmlFor="demo-other" className="block text-sm font-medium text-dasza-navy mb-1">{d.other}</label>
                 <input id="demo-other" className={inputCls} value={v.otherMaterial} onChange={(e) => set('otherMaterial', e.target.value)} />
               </div>
               <div>
-                <label htmlFor="demo-volume" className="block text-sm font-medium text-dasza-navy mb-1">Estimated pallets / month</label>
+                <label htmlFor="demo-volume" className="block text-sm font-medium text-dasza-navy mb-1">{d.volume}</label>
                 <select id="demo-volume" className={inputCls} value={v.palletsPerMonth} onChange={(e) => set('palletsPerMonth', e.target.value)}>
-                  <option value="">Not sure yet</option>
-                  <option>Under 50</option>
-                  <option>50 – 200</option>
-                  <option>200 – 1,000</option>
-                  <option>1,000+</option>
+                  {d.volumes.map((o, i) => (
+                    <option key={o} value={i === 0 ? '' : o}>{o}</option>
+                  ))}
                 </select>
               </div>
             </div>
             {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
             <div className="flex items-center justify-between gap-3">
               <button type="button" onClick={() => setStep(1)} className="px-4 py-2 rounded-full text-dasza-navy hover:bg-gray-100">
-                Back
+                {d.back}
               </button>
               <button type="submit" disabled={submitting} className="px-6 py-2.5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 disabled:opacity-60 transition-colors">
-                {submitting ? 'Preparing your demo…' : 'Start the guided tour'}
+                {submitting ? d.preparing : d.start}
               </button>
             </div>
-            <p className="text-xs text-dasza-navy/60">By continuing you agree that Dasza 3PL may contact you about this demo. All data shown in the demo is fictional.</p>
+            <p className="text-xs text-dasza-navy/60">{d.consent}</p>
           </form>
         )}
       </div>

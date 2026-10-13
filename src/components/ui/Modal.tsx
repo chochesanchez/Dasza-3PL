@@ -8,9 +8,10 @@ type Props = {
   title?: string
   children?: React.ReactNode
   status?: 'success' | 'info' | 'error'
+  closeLabel?: string
 }
 
-export default function Modal({ open, onClose, title, children, status = 'info' }: Props) {
+export default function Modal({ open, onClose, title, children, status = 'info', closeLabel = 'Close' }: Props) {
   const closeRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function Modal({ open, onClose, title, children, status = 'info' 
         {title && <h2 id="modal-title" className="mt-4 font-display text-2xl font-semibold text-dasza-ink">{title}</h2>}
         <div className="mt-2 text-dasza-navy leading-relaxed">{children}</div>
         <button ref={closeRef} onClick={onClose} className="mt-6 inline-flex items-center h-11 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600">
-          Close
+          {closeLabel}
         </button>
       </div>
     </div>

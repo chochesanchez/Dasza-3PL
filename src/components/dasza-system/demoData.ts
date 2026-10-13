@@ -28,46 +28,46 @@ export const MATERIALS: { id: MaterialId; label: string; hint: string }[] = [
   { id: 'mro', label: 'Spare parts / MRO', hint: 'Maintenance inventory' },
 ]
 
-const CATALOG: Record<MaterialId, { desc: string; uom: string; hs: string }[]> = {
+const CATALOG: Record<MaterialId, { desc: { en: string; es: string }; uom: string; hs: string }[]> = {
   metal: [
-    { desc: 'Aluminum wheel hub casting', uom: 'PZA', hs: '8708.70.99' },
-    { desc: 'Steel brake drum', uom: 'PZA', hs: '8708.30.99' },
-    { desc: 'Stamped bracket LH', uom: 'PZA', hs: '7326.90.99' },
+    { desc: { en: 'Aluminum wheel hub casting', es: 'Maza de rueda de aluminio fundido' }, uom: 'PZA', hs: '8708.70.99' },
+    { desc: { en: 'Steel brake drum', es: 'Tambor de freno de acero' }, uom: 'PZA', hs: '8708.30.99' },
+    { desc: { en: 'Stamped bracket LH', es: 'Soporte estampado izquierdo' }, uom: 'PZA', hs: '7326.90.99' },
   ],
   polymer: [
-    { desc: 'PP resin pellets 25kg', uom: 'KG', hs: '3902.10.01' },
-    { desc: 'Molded ABS housing', uom: 'PZA', hs: '3926.90.99' },
+    { desc: { en: 'PP resin pellets 25kg', es: 'Resina PP en pellet 25 kg' }, uom: 'KG', hs: '3902.10.01' },
+    { desc: { en: 'Molded ABS housing', es: 'Carcasa moldeada de ABS' }, uom: 'PZA', hs: '3926.90.99' },
   ],
   ceramic: [
-    { desc: 'Magnesia-carbon brick', uom: 'PZA', hs: '6902.10.01' },
-    { desc: 'Refractory mortar 25kg', uom: 'KG', hs: '3816.00.01' },
+    { desc: { en: 'Magnesia-carbon brick', es: 'Ladrillo de magnesia-carbono' }, uom: 'PZA', hs: '6902.10.01' },
+    { desc: { en: 'Refractory mortar 25kg', es: 'Mortero refractario 25 kg' }, uom: 'KG', hs: '3816.00.01' },
   ],
   assemblies: [
-    { desc: 'Air suspension module', uom: 'PZA', hs: '8708.80.99' },
-    { desc: 'Valve sub-assembly kit', uom: 'KIT', hs: '8481.80.99' },
+    { desc: { en: 'Air suspension module', es: 'Módulo de suspensión neumática' }, uom: 'PZA', hs: '8708.80.99' },
+    { desc: { en: 'Valve sub-assembly kit', es: 'Kit de subensamble de válvula' }, uom: 'KIT', hs: '8481.80.99' },
   ],
   raw: [
-    { desc: 'Cold-rolled steel coil', uom: 'TON', hs: '7209.16.01' },
-    { desc: 'Aluminum ingot', uom: 'KG', hs: '7601.20.99' },
+    { desc: { en: 'Cold-rolled steel coil', es: 'Rollo de acero laminado en frío' }, uom: 'TON', hs: '7209.16.01' },
+    { desc: { en: 'Aluminum ingot', es: 'Lingote de aluminio' }, uom: 'KG', hs: '7601.20.99' },
   ],
   electronics: [
-    { desc: 'Hermetic compressor motor', uom: 'PZA', hs: '8414.30.99' },
-    { desc: 'Run capacitor 45µF', uom: 'PZA', hs: '8532.25.01' },
+    { desc: { en: 'Hermetic compressor motor', es: 'Motor de compresor hermético' }, uom: 'PZA', hs: '8414.30.99' },
+    { desc: { en: 'Run capacitor 45µF', es: 'Capacitor de marcha 45µF' }, uom: 'PZA', hs: '8532.25.01' },
   ],
   finished: [
-    { desc: 'Fill valve retail pack', uom: 'CJA', hs: '8481.80.99' },
-    { desc: 'Condensing unit 2HP', uom: 'PZA', hs: '8418.69.99' },
+    { desc: { en: 'Fill valve retail pack', es: 'Válvula de llenado empaque retail' }, uom: 'CJA', hs: '8481.80.99' },
+    { desc: { en: 'Condensing unit 2HP', es: 'Unidad condensadora 2 HP' }, uom: 'PZA', hs: '8418.69.99' },
   ],
   chemicals: [
-    { desc: 'Industrial adhesive 20L', uom: 'LT', hs: '3506.91.99' },
+    { desc: { en: 'Industrial adhesive 20L', es: 'Adhesivo industrial 20 L' }, uom: 'LT', hs: '3506.91.99' },
   ],
   packaging: [
-    { desc: 'Corrugated box 60x40x40', uom: 'PZA', hs: '4819.10.01' },
-    { desc: 'Stretch film 18in', uom: 'ROL', hs: '3920.10.99' },
+    { desc: { en: 'Corrugated box 60x40x40', es: 'Caja corrugada 60x40x40' }, uom: 'PZA', hs: '4819.10.01' },
+    { desc: { en: 'Stretch film 18in', es: 'Película estirable 18 in' }, uom: 'ROL', hs: '3920.10.99' },
   ],
   mro: [
-    { desc: 'Bearing 6205-2RS', uom: 'PZA', hs: '8482.10.99' },
-    { desc: 'V-belt B-52', uom: 'PZA', hs: '4010.32.01' },
+    { desc: { en: 'Bearing 6205-2RS', es: 'Rodamiento 6205-2RS' }, uom: 'PZA', hs: '8482.10.99' },
+    { desc: { en: 'V-belt B-52', es: 'Banda en V B-52' }, uom: 'PZA', hs: '4010.32.01' },
   ],
 }
 
@@ -108,6 +108,8 @@ export type MovementRow = {
   pallets: number
 }
 
+export type LabelStatus = 'stock' | 'shipped' | 'printed'
+
 export type LabelRow = {
   labelId: string
   item: string
@@ -115,10 +117,10 @@ export type LabelRow = {
   quantity: number
   location: string
   receivedOn: string
-  status: 'In stock' | 'Shipped' | 'Printed'
+  status: LabelStatus
 }
 
-export type AgingBucket = { label: string; pallets: number }
+export type AgingBucket = { bucket: number; pallets: number }
 
 export type CycleCount = {
   name: string
@@ -128,7 +130,8 @@ export type CycleCount = {
   variances: number
 }
 
-export type BillingLine = { concept: string; unit: string; qty: number; rate: number }
+export type BillingKey = 'storage' | 'palletIn' | 'palletOut' | 'labeling' | 'wrapping'
+export type BillingLine = { key: BillingKey; qty: number; rate: number }
 
 export type DemoData = {
   company: string
@@ -146,7 +149,7 @@ function fmtDate(d: Date) {
   return d.toISOString().slice(0, 10)
 }
 
-export function buildDemoData(company: string, materials: MaterialId[]): DemoData {
+export function buildDemoData(company: string, materials: MaterialId[], lang: 'en' | 'es' = 'en'): DemoData {
   const rand = seeded(`${company}|${materials.join(',')}`)
   const int = (min: number, max: number) => Math.floor(rand() * (max - min + 1)) + min
   const pick = <T,>(arr: T[]) => arr[Math.floor(rand() * arr.length)]
@@ -159,7 +162,7 @@ export function buildDemoData(company: string, materials: MaterialId[]): DemoDat
     const pallets = int(4, 60)
     return {
       item: `${prefix}-${String(1000 + i * 37).padStart(5, '0')}`,
-      description: it.desc,
+      description: it.desc[lang],
       uom: it.uom,
       hsCode: it.hs,
       quantity: pallets * int(24, 480),
@@ -192,13 +195,13 @@ export function buildDemoData(company: string, materials: MaterialId[]): DemoDat
 
   const labels: LabelRow[] = Array.from({ length: 10 }, (_, i) => {
     const inv = pick(inventory)
-    const status = pick<LabelRow['status']>(['In stock', 'In stock', 'In stock', 'Shipped', 'Printed'])
+    const status = pick<LabelStatus>(['stock', 'stock', 'stock', 'shipped', 'printed'])
     return {
       labelId: `DZ${int(1000000, 1999999)}`,
       item: inv.item,
       lot: `L${int(2400, 2699)}-${String.fromCharCode(65 + (i % 6))}`,
       quantity: int(24, 480),
-      location: status === 'Shipped' ? '—' : inv.location,
+      location: status === 'shipped' ? '—' : inv.location,
       receivedOn: fmtDate(daysAgo(int(2, 220))),
       status,
     }
@@ -206,8 +209,7 @@ export function buildDemoData(company: string, materials: MaterialId[]): DemoDat
 
   const totalPallets = inventory.reduce((s, r) => s + r.pallets, 0)
   const shares = [0.38, 0.27, 0.18, 0.11, 0.06]
-  const agingLabels = ['0–30 days', '31–60 days', '61–90 days', '91–180 days', '180+ days']
-  const aging: AgingBucket[] = agingLabels.map((label, i) => ({ label, pallets: Math.round(totalPallets * shares[i]) }))
+  const aging: AgingBucket[] = shares.map((share, i) => ({ bucket: i, pallets: Math.round(totalPallets * share) }))
 
   const cycleCounts: CycleCount[] = [0, 1, 2].map((i) => {
     const expected = int(80, 260)
@@ -225,11 +227,11 @@ export function buildDemoData(company: string, materials: MaterialId[]): DemoDat
   const palletsOut = shipments.reduce((s, r) => s + r.pallets, 0)
   // Rates follow the published per-unit tariff structure; amounts are illustrative only.
   const billing: BillingLine[] = [
-    { concept: 'Storage (average pallets)', unit: 'skid / month', qty: totalPallets, rate: 12 },
-    { concept: 'Pallet IN', unit: 'skid', qty: palletsIn, rate: 3 },
-    { concept: 'Pallet OUT', unit: 'skid', qty: palletsOut, rate: 3 },
-    { concept: 'Labeling', unit: 'box', qty: int(200, 900), rate: 0.25 },
-    { concept: 'Wrapping', unit: 'skid', qty: palletsOut, rate: 0.25 },
+    { key: 'storage', qty: totalPallets, rate: 12 },
+    { key: 'palletIn', qty: palletsIn, rate: 3 },
+    { key: 'palletOut', qty: palletsOut, rate: 3 },
+    { key: 'labeling', qty: int(200, 900), rate: 0.25 },
+    { key: 'wrapping', qty: palletsOut, rate: 0.25 },
   ]
 
   const accuracyCounts = cycleCounts.reduce(
@@ -238,7 +240,7 @@ export function buildDemoData(company: string, materials: MaterialId[]): DemoDat
   )
 
   return {
-    company: company || 'Your company',
+    company,
     inventory,
     receipts,
     shipments,

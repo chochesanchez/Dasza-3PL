@@ -3,22 +3,16 @@ import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { PHONE_COUNTRIES, WHATSAPP_NUMBER } from '@/lib/phoneCountries'
-
-const SOLUTIONS = [
-  'Warehousing',
-  'IMMEX / Shelter',
-  'VMI',
-  'Customs',
-  'Transportation',
-  'Last mile',
-  'Fulfillment',
-  'Other',
-] as const
+import { COMPANY } from '@/content/site'
+import { useI18n } from '@/i18n/I18nProvider'
+import { fmt } from '@/i18n/dictionaries'
 
 const inputCls =
   'mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan'
 
 export default function ContactForm() {
+  const { t } = useI18n()
+  const f = t.form
   const [loading, setLoading] = useState(false)
   const [ok, setOk] = useState(false)
   const [failedMessage, setFailedMessage] = useState<string | null>(null)
@@ -61,45 +55,59 @@ export default function ContactForm() {
       // Keep the form filled and give the visitor a one-click way to still reach us.
       setFailedMessage(
         [
-          `Hello Dasza 3PL, I'm ${name}${company ? ` from ${company}` : ''}.`,
-          selected.length ? `Interested in: ${selected.join(', ')}.` : '',
+          `${f.waHello} ${name}${company ? ` ${f.waFrom} ${company}` : ''}.`,
+          selected.length ? `${f.waInterested} ${selected.join(', ')}.` : '',
           message,
-          `Email: ${email} · Phone: ${phone}`,
-        ].filter(Boolean).join('\n'),
+          fmt(f.waContact, { email, phone }),
+        ]
+          .filter(Boolean)
+          .join('\n'),
       )
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <form onSubmit={onSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
       <div className="lg:col-span-2 rounded-lg border border-dasza-line bg-white p-6 sm:p-8 space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-          <label className="text-sm font-medium text-dasza-ink">Full name*
-            <input name="name" autoComplete="name" placeholder="Your name" required minLength={2} className={inputCls} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5 items-start">
+          <label className="text-sm font-medium text-dasza-ink">
+            {f.name}*
+            <input name="name" autoComplete="name" placeholder={f.namePh} required minLength={2} className={inputCls} />
           </label>
-          <label className="text-sm font-medium text-dasza-ink">Email*
+          <label className="text-sm font-medium text-dasza-ink">
+            {f.email}*
             <input name="email" type="email" autoComplete="email" placeholder="you@company.com" required className={inputCls} />
           </label>
           <div className="text-sm font-medium text-dasza-ink">
-            <label htmlFor="contact-phone">Phone*</label>
-            <div className="mt-1 flex gap-2">
-              <select name="phoneCountry" aria-label="Country code" defaultValue="MX" className="h-12 border border-dasza-line rounded-md px-2 bg-white focus:outline-none focus:ring-2 focus:ring-dasza-cyan">
+            <label htmlFor="contact-phone">{f.phone}*</label>
+            <div className="mt-1.5 flex gap-2">
+              <select name="phoneCountry" aria-label={f.countryCode} defaultValue="MX" className="h-12 border border-dasza-line rounded-md px-2 bg-white focus:outline-none focus:ring-2 focus:ring-dasza-cyan">
                 {PHONE_COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.code}>{c.code === 'OTHER' ? 'Other' : `${c.code} ${c.dial}`}</option>
+                  <option key={c.code} value={c.code}>{c.code === 'OTHER' ? f.other : `${c.code} ${c.dial}`}</option>
                 ))}
               </select>
-              <input id="contact-phone" name="phone" type="tel" autoComplete="tel-national" placeholder="81 1234 5678" required minLength={7} className="flex-1 min-w-0 h-12 px-3.5 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+              <input
+                id="contact-phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel-national"
+                placeholder={f.phonePh}
+                required
+                minLength={7}
+                className="flex-1 min-w-0 h-12 px-3.5 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan"
+              />
             </div>
           </div>
-          <label className="text-sm font-medium text-dasza-ink">Company
-            <input name="company" autoComplete="organization" placeholder="Company" className={inputCls} />
+          <label className="text-sm font-medium text-dasza-ink">
+            {f.company}
+            <input name="company" autoComplete="organization" placeholder={f.company} className={inputCls} />
           </label>
         </div>
 
         <fieldset>
-          <legend className="text-sm font-medium text-dasza-ink">What do you need?</legend>
+          <legend className="text-sm font-medium text-dasza-ink">{f.need}</legend>
           <div className="mt-2 flex flex-wrap gap-2">
-            {SOLUTIONS.map((opt) => {
+            {f.solutions.map((opt) => {
               const on = selected.includes(opt)
               return (
                 <button
@@ -116,8 +124,14 @@ export default function ContactForm() {
           </div>
         </fieldset>
 
-        <label className="block text-sm font-medium text-dasza-ink">Message (optional)
-          <textarea name="message" rows={3} placeholder="Tell us briefly about your operation" className="mt-1.5 block w-full px-3.5 py-3 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan" />
+        <label className="block text-sm font-medium text-dasza-ink">
+          {f.message}
+          <textarea
+            name="message"
+            rows={3}
+            placeholder={f.messagePh}
+            className="mt-1.5 block w-full px-3.5 py-3 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan"
+          />
         </label>
 
         {/* Honeypot — hidden from people, filled by bots */}
@@ -125,8 +139,8 @@ export default function ContactForm() {
 
         {failedMessage && (
           <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-            <p className="font-medium">We couldn’t send your message right now.</p>
-            <p className="mt-1">Your details are still here. Send them to us directly so we don’t miss you:</p>
+            <p className="font-medium">{f.failTitle}</p>
+            <p className="mt-1">{f.failText}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(failedMessage)}`}
@@ -134,13 +148,13 @@ export default function ContactForm() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-medium hover:brightness-95"
               >
-                Send via WhatsApp
+                {f.viaWhatsapp}
               </a>
               <a
-                href={`mailto:jmsanchez@dasza.com?subject=${encodeURIComponent('Contact request')}&body=${encodeURIComponent(failedMessage)}`}
+                href={`mailto:${COMPANY.email}?subject=${encodeURIComponent(f.emailSubject)}&body=${encodeURIComponent(failedMessage)}`}
                 className="inline-flex items-center h-10 px-4 rounded-md border border-red-300 text-red-800 hover:bg-red-100"
               >
-                Send by email
+                {f.viaEmail}
               </a>
             </div>
           </div>
@@ -148,33 +162,34 @@ export default function ContactForm() {
 
         <div className="pt-1">
           <button disabled={loading} className="inline-flex items-center h-12 px-8 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-dasza-cyan600 disabled:opacity-60 transition-colors">
-            {loading ? 'Sending…' : 'Send message'}
+            {loading ? f.sending : f.send}
           </button>
         </div>
       </div>
+
       <aside className="rounded-lg bg-dasza-ink text-white p-6 sm:p-8 text-sm flex flex-col">
-        <h3 className="font-display text-xl font-semibold">Other ways to reach us</h3>
+        <h3 className="font-display text-xl font-semibold">{f.asideTitle}</h3>
         <dl className="mt-6 space-y-5">
           <div className="flex gap-3">
             <PhoneIcon className="h-5 w-5 mt-0.5 text-dasza-cyan shrink-0" aria-hidden />
-            <div><dt className="text-white/60">Phone</dt><dd><a href="tel:+528119161086" className="hover:text-dasza-cyan whitespace-nowrap">+52 81 1916 1086</a></dd></div>
+            <div><dt className="text-white/60">{f.asidePhone}</dt><dd><a href={COMPANY.phoneHref} className="hover:text-dasza-cyan whitespace-nowrap">{COMPANY.phone}</a></dd></div>
           </div>
           <div className="flex gap-3">
             <EnvelopeIcon className="h-5 w-5 mt-0.5 text-dasza-cyan shrink-0" aria-hidden />
-            <div><dt className="text-white/60">Email</dt><dd><a href="mailto:jmsanchez@dasza.com" className="hover:text-dasza-cyan">jmsanchez@dasza.com</a></dd></div>
+            <div><dt className="text-white/60">{f.asideEmail}</dt><dd><a href={`mailto:${COMPANY.email}`} className="hover:text-dasza-cyan">{COMPANY.email}</a></dd></div>
           </div>
           <div className="flex gap-3">
             <MapPinIcon className="h-5 w-5 mt-0.5 text-dasza-cyan shrink-0" aria-hidden />
-            <div><dt className="text-white/60">Office</dt><dd className="leading-relaxed">GDS Business Park, Av. Miguel Alemán 762, El Milagro, 66634 Apodaca, N.L.</dd></div>
+            <div><dt className="text-white/60">{f.asideOffice}</dt><dd className="leading-relaxed">{COMPANY.office}</dd></div>
           </div>
         </dl>
         <div className="mt-auto pt-8 flex flex-wrap gap-2">
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-semibold">WhatsApp</a>
-          <a href="https://www.google.com/maps/place/GDS+Business+Park/@25.7595496,-100.1962086,967m" target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md border border-white/30 hover:border-white">Open in Maps</a>
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-semibold">{f.asideWhatsapp}</a>
+          <a href={COMPANY.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md border border-white/30 hover:border-white">{f.asideMaps}</a>
         </div>
       </aside>
-      <Modal open={ok} onClose={() => setOk(false)} title="Message sent" status="success">
-        Thank you! Our team will contact you within one business day.
+      <Modal open={ok} onClose={() => setOk(false)} title={f.sentTitle} status="success" closeLabel={t.common.close}>
+        {f.sentText}
       </Modal>
     </form>
   )

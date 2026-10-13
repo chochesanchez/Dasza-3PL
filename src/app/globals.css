@@ -94,7 +94,6 @@ body {
   will-change: transform;
   animation: marquee-ltr 120s linear infinite;
 }
-.partners-marquee-viewport:hover .partners-marquee-track { animation-play-state: paused; }
 @keyframes marquee-ltr {
   0% { transform: translateX(-50%); }
   100% { transform: translateX(0%); }

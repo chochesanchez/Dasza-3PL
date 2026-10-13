@@ -14,37 +14,27 @@ import {
   Squares2X2Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { buildDemoData, type DemoData } from './demoData'
+import { buildDemoData, type DemoData, type LabelStatus } from './demoData'
+import { useI18n } from '@/i18n/I18nProvider'
+import { fmt, type Dict } from '@/i18n/dictionaries'
 import type { Visitor } from './Onboarding'
 
 type SectionId = 'dashboard' | 'inventory' | 'receipts' | 'shipments' | 'labels' | 'aging' | 'cycle' | 'billing' | 'mobile'
 
-const NAV: { id: SectionId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: Squares2X2Icon },
-  { id: 'inventory', label: 'Inventory', icon: ArchiveBoxIcon },
-  { id: 'receipts', label: 'Receipts', icon: ArrowDownOnSquareIcon },
-  { id: 'shipments', label: 'Shipments', icon: ArrowUpOnSquareIcon },
-  { id: 'labels', label: 'Pallet labels', icon: QrCodeIcon },
-  { id: 'aging', label: 'Storage aging', icon: ClockIcon },
-  { id: 'cycle', label: 'Cycle counts', icon: ClipboardDocumentCheckIcon },
-  { id: 'billing', label: 'Billing', icon: BanknotesIcon },
-  { id: 'mobile', label: 'Warehouse app', icon: DevicePhoneMobileIcon },
+const NAV: { id: SectionId; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: 'dashboard', icon: Squares2X2Icon },
+  { id: 'inventory', icon: ArchiveBoxIcon },
+  { id: 'receipts', icon: ArrowDownOnSquareIcon },
+  { id: 'shipments', icon: ArrowUpOnSquareIcon },
+  { id: 'labels', icon: QrCodeIcon },
+  { id: 'aging', icon: ClockIcon },
+  { id: 'cycle', icon: ClipboardDocumentCheckIcon },
+  { id: 'billing', icon: BanknotesIcon },
+  { id: 'mobile', icon: DevicePhoneMobileIcon },
 ]
 
-const TOUR: { id: SectionId; title: string; body: string }[] = [
-  { id: 'dashboard', title: 'Your operation at a glance', body: 'When you log in you see your pallets on hand, this month’s receipts and shipments, and inventory accuracy from the latest cycle counts.' },
-  { id: 'inventory', title: 'Inventory by item and location', body: 'Every item with its quantity, unit of measure, pallets, tariff code (fracción arancelaria) and rack location. Filter by warehouse and export to Excel at any time.' },
-  { id: 'receipts', title: 'Receipts (Entradas)', body: 'Each truck is checked against your packing list, labeled pallet by pallet and registered with a receipt folio. You are notified the same day.' },
-  { id: 'shipments', title: 'Shipments (Salidas)', body: 'Only your authorized requesters can release material. Every shipment is tied to your sales order and folio for full traceability.' },
-  { id: 'labels', title: 'Every pallet has a label', body: 'Pallets are tracked individually by label, lot and location — from receipt to shipment — so you always know exactly where your material is.' },
-  { id: 'aging', title: 'Storage aging', body: 'See how long material has been stored, to plan consumption and spot obsolete or slow-moving inventory early.' },
-  { id: 'cycle', title: 'Cycle counts', body: 'Our team counts racks continuously with handheld scanners. Results and any variances are visible here.' },
-  { id: 'billing', title: 'Transparent billing', body: 'Monthly charges are calculated from the same movements you see in the system — storage, pallet in/out and value-added services.' },
-  { id: 'mobile', title: 'On the warehouse floor', body: 'Our operators use the Dasza mobile app to scan labels, relocate pallets, count inventory and attach photo evidence to shipments.' },
-]
+const TOUR: SectionId[] = ['dashboard', 'inventory', 'receipts', 'shipments', 'labels', 'aging', 'cycle', 'billing', 'mobile']
 
-const n = (x: number) => x.toLocaleString('en-US')
-const usd = (x: number) => x.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 
 function downloadCsv(filename: string, rows: Record<string, string | number>[]) {
   if (!rows.length) return
@@ -106,21 +96,21 @@ function SectionTitle({ title, subtitle, action }: { title: string; subtitle?: s
   )
 }
 
-function ExportButton({ onClick }: { onClick: () => void }) {
+function ExportButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button onClick={onClick} className="inline-flex items-center gap-1.5 rounded-lg border border-dasza-gray/60 px-3 py-1.5 text-sm text-dasza-navy hover:border-dasza-navy">
-      <ArrowDownTrayIcon className="h-4 w-4" aria-hidden /> Export
+      <ArrowDownTrayIcon className="h-4 w-4" aria-hidden /> {label}
     </button>
   )
 }
 
-function AgingBars({ data }: { data: DemoData }) {
+function AgingBars({ data, labels }: { data: DemoData; labels: string[] }) {
   const max = Math.max(...data.aging.map((a) => a.pallets), 1)
   return (
     <ul className="space-y-2">
       {data.aging.map((a) => (
-        <li key={a.label} className="grid grid-cols-[110px_1fr_48px] items-center gap-3 text-sm">
-          <span className="text-dasza-navy/80">{a.label}</span>
+        <li key={a.bucket} className="grid grid-cols-[110px_1fr_48px] items-center gap-3 text-sm">
+          <span className="text-dasza-navy/80">{labels[a.bucket]}</span>
           <span className="h-3 rounded-full bg-gray-100 overflow-hidden">
             <span className="block h-full rounded-full bg-dasza-navy" style={{ width: `${(a.pallets / max) * 100}%` }} />
           </span>
@@ -131,44 +121,45 @@ function AgingBars({ data }: { data: DemoData }) {
   )
 }
 
-const statusCls: Record<string, string> = {
-  'In stock': 'bg-emerald-50 text-emerald-800',
-  Shipped: 'bg-gray-100 text-gray-700',
-  Printed: 'bg-amber-50 text-amber-800',
+const statusCls: Record<LabelStatus, string> = {
+  stock: 'bg-emerald-50 text-emerald-800',
+  shipped: 'bg-gray-100 text-gray-700',
+  printed: 'bg-amber-50 text-amber-800',
 }
 
-function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
-  const [warehouse, setWarehouse] = useState('All')
+function SectionView({ id, data, d, num, usd }: { id: SectionId; data: DemoData; d: Dict['demo']; num: (x: number) => string; usd: (x: number) => string }) {
+  const n = num
+  const [warehouse, setWarehouse] = useState('__all')
   const [query, setQuery] = useState('')
 
   if (id === 'dashboard') {
     return (
       <div className="space-y-6">
-        <SectionTitle title={`Welcome, ${data.company}`} subtitle="Sample data for demonstration purposes" />
+        <SectionTitle title={fmt(d.welcome, { company: data.company })} subtitle={d.sample} />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Kpi label="Pallets on hand" value={n(data.kpis.pallets)} sub={`${data.kpis.skus} active SKUs`} />
-          <Kpi label="Receipts (30 days)" value={n(data.kpis.receiptsMonth)} sub="trucks received" />
-          <Kpi label="Shipments (30 days)" value={n(data.kpis.shipmentsMonth)} sub="orders released" />
-          <Kpi label="Inventory accuracy" value={`${data.kpis.accuracy}%`} sub="last 3 cycle counts" />
+          <Kpi label={d.kpiPallets} value={n(data.kpis.pallets)} sub={fmt(d.kpiSkus, { n: data.kpis.skus })} />
+          <Kpi label={d.kpiReceipts} value={n(data.kpis.receiptsMonth)} sub={d.kpiReceiptsSub} />
+          <Kpi label={d.kpiShipments} value={n(data.kpis.shipmentsMonth)} sub={d.kpiShipmentsSub} />
+          <Kpi label={d.kpiAccuracy} value={`${data.kpis.accuracy}%`} sub={d.kpiAccuracySub} />
         </div>
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="rounded-xl border border-dasza-gray/40 bg-white p-4">
-            <div className="font-semibold text-dasza-navy mb-3">Storage aging (pallets)</div>
-            <AgingBars data={data} />
+            <div className="font-semibold text-dasza-navy mb-3">{d.agingTitle}</div>
+            <AgingBars data={data} labels={d.agingBuckets} />
           </div>
           <div className="rounded-xl border border-dasza-gray/40 bg-white p-4">
-            <div className="font-semibold text-dasza-navy mb-3">Latest movements</div>
+            <div className="font-semibold text-dasza-navy mb-3">{d.latest}</div>
             <ul className="divide-y divide-gray-100 text-sm">
               {[...data.receipts.slice(0, 3).map((r) => ({ ...r, kind: 'IN' })), ...data.shipments.slice(0, 3).map((r) => ({ ...r, kind: 'OUT' }))]
                 .sort((a, b) => b.date.localeCompare(a.date))
                 .map((r) => (
                   <li key={r.folio + r.kind} className="flex items-center justify-between py-2">
                     <span className="flex items-center gap-2">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded ${r.kind === 'IN' ? 'bg-emerald-50 text-emerald-800' : 'bg-sky-50 text-sky-800'}`}>{r.kind}</span>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded ${r.kind === 'IN' ? 'bg-emerald-50 text-emerald-800' : 'bg-sky-50 text-sky-800'}`}>{r.kind === 'IN' ? d.in : d.out}</span>
                       <span className="text-dasza-charcoal">{r.folio}</span>
                       <span className="text-dasza-navy/60 hidden sm:inline">{r.item}</span>
                     </span>
-                    <span className="text-dasza-navy/70 tabular-nums">{r.pallets} plt · {r.date}</span>
+                    <span className="text-dasza-navy/70 tabular-nums">{r.pallets} {d.plt}, {r.date}</span>
                   </li>
                 ))}
             </ul>
@@ -179,31 +170,31 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
   }
 
   if (id === 'inventory') {
-    const warehouses = ['All', ...Array.from(new Set(data.inventory.map((r) => r.warehouse)))]
+    const warehouses = ['__all', ...Array.from(new Set(data.inventory.map((r) => r.warehouse)))]
     const rows = data.inventory.filter(
-      (r) => (warehouse === 'All' || r.warehouse === warehouse) && `${r.item} ${r.description}`.toLowerCase().includes(query.toLowerCase()),
+      (r) => (warehouse === '__all' || r.warehouse === warehouse) && `${r.item} ${r.description}`.toLowerCase().includes(query.toLowerCase()),
     )
     return (
       <div>
         <SectionTitle
-          title="Inventory"
-          subtitle="Stock by item and location"
-          action={<ExportButton onClick={() => downloadCsv('dasza-demo-inventory.csv', rows)} />}
+          title={d.invTitle}
+          subtitle={d.invSub}
+          action={<ExportButton label={d.export} onClick={() => downloadCsv('dasza-demo-inventory.csv', rows)} />}
         />
         <div className="flex flex-wrap gap-3 mb-4">
           <label className="text-sm text-dasza-navy">
-            <span className="sr-only">Warehouse</span>
+            <span className="sr-only">{d.warehouse}</span>
             <select value={warehouse} onChange={(e) => setWarehouse(e.target.value)} className="rounded-lg border border-dasza-gray/60 px-3 py-1.5">
-              {warehouses.map((w) => <option key={w}>{w}</option>)}
+              {warehouses.map((w) => <option key={w} value={w}>{w === '__all' ? d.all : w}</option>)}
             </select>
           </label>
           <label className="text-sm flex-1 min-w-[180px]">
-            <span className="sr-only">Search item</span>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search item or description" className="w-full rounded-lg border border-dasza-gray/60 px-3 py-1.5" />
+            <span className="sr-only">{d.search}</span>
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={d.search} className="w-full rounded-lg border border-dasza-gray/60 px-3 py-1.5" />
           </label>
         </div>
         <Table
-          headers={['Item', 'Description', 'HS code', 'Qty', 'UOM', 'Pallets', 'Location', 'Warehouse']}
+          headers={d.invCols}
           align={['l', 'l', 'l', 'r', 'l', 'r', 'l', 'l']}
           rows={rows.map((r) => [r.item, r.description, r.hsCode, n(r.quantity), r.uom, r.pallets, r.location, r.warehouse])}
         />
@@ -216,12 +207,12 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
     return (
       <div>
         <SectionTitle
-          title={id === 'receipts' ? 'Receipts' : 'Shipments'}
-          subtitle="Last 30 days"
-          action={<ExportButton onClick={() => downloadCsv(`dasza-demo-${id}.csv`, rows)} />}
+          title={id === 'receipts' ? d.receiptsTitle : d.shipmentsTitle}
+          subtitle={d.last30}
+          action={<ExportButton label={d.export} onClick={() => downloadCsv(`dasza-demo-${id}.csv`, rows)} />}
         />
         <Table
-          headers={['Date', 'Folio', id === 'receipts' ? 'Invoice' : 'Sales order', 'Item', 'Qty', 'UOM', 'Pallets']}
+          headers={[d.moveCols.date, d.moveCols.folio, id === 'receipts' ? d.moveCols.invoice : d.moveCols.order, d.moveCols.item, d.moveCols.qty, d.moveCols.uom, d.moveCols.pallets]}
           align={['l', 'l', 'l', 'l', 'r', 'l', 'r']}
           rows={rows.map((r) => [r.date, r.folio, r.reference, r.item, n(r.quantity), r.uom, r.pallets])}
         />
@@ -232,9 +223,9 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
   if (id === 'labels') {
     return (
       <div>
-        <SectionTitle title="Pallet labels" subtitle="Individual pallet traceability" action={<ExportButton onClick={() => downloadCsv('dasza-demo-labels.csv', data.labels)} />} />
+        <SectionTitle title={d.labelsTitle} subtitle={d.labelsSub} action={<ExportButton label={d.export} onClick={() => downloadCsv('dasza-demo-labels.csv', data.labels)} />} />
         <Table
-          headers={['Label', 'Item', 'Lot', 'Qty', 'Location', 'Received', 'Status']}
+          headers={d.labelCols}
           align={['l', 'l', 'l', 'r', 'l', 'l', 'l']}
           rows={data.labels.map((l) => [
             <span key="l" className="font-mono">{l.labelId}</span>,
@@ -243,7 +234,7 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
             n(l.quantity),
             l.location,
             l.receivedOn,
-            <span key="s" className={`text-xs font-medium px-2 py-0.5 rounded ${statusCls[l.status]}`}>{l.status}</span>,
+            <span key="s" className={`text-xs font-medium px-2 py-0.5 rounded ${statusCls[l.status]}`}>{d.status[l.status]}</span>,
           ])}
         />
       </div>
@@ -253,9 +244,9 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
   if (id === 'aging') {
     return (
       <div className="space-y-6">
-        <SectionTitle title="Storage aging" subtitle="Pallets by days in storage" />
+        <SectionTitle title={d.agingSection} subtitle={d.agingSub} />
         <div className="rounded-xl border border-dasza-gray/40 bg-white p-5 max-w-2xl">
-          <AgingBars data={data} />
+          <AgingBars data={data} labels={d.agingBuckets} />
         </div>
       </div>
     )
@@ -264,14 +255,14 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
   if (id === 'cycle') {
     return (
       <div className="space-y-6">
-        <SectionTitle title="Cycle counts" subtitle="Scanned with handheld devices on the floor" />
+        <SectionTitle title={d.cycleTitle} subtitle={d.cycleSub} />
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl">
-          <Kpi label="Accuracy" value={`${data.kpis.accuracy}%`} />
-          <Kpi label="Counts this quarter" value={String(data.cycleCounts.length)} />
-          <Kpi label="Open variances" value={String(data.cycleCounts.reduce((s, c) => s + c.variances, 0))} />
+          <Kpi label={d.cycleAccuracy} value={`${data.kpis.accuracy}%`} />
+          <Kpi label={d.cycleCounts} value={String(data.cycleCounts.length)} />
+          <Kpi label={d.cycleVariances} value={String(data.cycleCounts.reduce((s, c) => s + c.variances, 0))} />
         </div>
         <Table
-          headers={['Count', 'Date', 'Expected', 'Scanned', 'Variances']}
+          headers={d.cycleCols}
           align={['l', 'l', 'r', 'r', 'r']}
           rows={data.cycleCounts.map((c) => [c.name, c.date, c.expected, c.scanned, c.variances])}
         />
@@ -283,16 +274,16 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
     const total = data.billing.reduce((s, b) => s + b.qty * b.rate, 0)
     return (
       <div className="space-y-4">
-        <SectionTitle title="Billing preview" subtitle="Calculated from this month’s movements (illustrative rates)" />
+        <SectionTitle title={d.billingTitle} subtitle={d.billingSub} />
         <Table
-          headers={['Concept', 'Unit', 'Qty', 'Rate', 'Amount']}
+          headers={d.billingCols}
           align={['l', 'l', 'r', 'r', 'r']}
           rows={[
-            ...data.billing.map((b) => [b.concept, b.unit, n(b.qty), usd(b.rate), usd(b.qty * b.rate)]),
-            [<strong key="t">Subtotal</strong>, '', '', '', <strong key="v">{usd(total)}</strong>],
+            ...data.billing.map((b) => [d.billingLines[b.key].concept, d.billingLines[b.key].unit, n(b.qty), usd(b.rate), usd(b.qty * b.rate)]),
+            [<strong key="t">{d.subtotal}</strong>, '', '', '', <strong key="v">{usd(total)}</strong>],
           ]}
         />
-        <p className="text-xs text-dasza-navy/60">Amounts in USD before VAT. Actual pricing depends on your contract.</p>
+        <p className="text-xs text-dasza-navy/60">{d.billingNote}</p>
       </div>
     )
   }
@@ -303,22 +294,21 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
       <div className="mx-auto w-[240px] rounded-[2rem] border-8 border-dasza-charcoal bg-white shadow-lg overflow-hidden" aria-hidden>
         <div className="bg-dasza-navy text-white text-center text-sm py-3 font-semibold">Dasza Mobile</div>
         <div className="p-3 space-y-2">
-          {['Location change', 'Cycle count', 'Stock by location', 'Shipping request'].map((t) => (
+          {d.appScreens.map((t) => (
             <div key={t} className="rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-dasza-navy">{t}</div>
           ))}
           <div className="mt-3 rounded-lg bg-gray-900 h-28 grid place-items-center">
             <QrCodeIcon className="h-12 w-12 text-white/80" />
           </div>
-          <div className="text-center text-xs text-dasza-navy/60 pb-2">Scan pallet label…</div>
+          <div className="text-center text-xs text-dasza-navy/60 pb-2">{d.appScan}</div>
         </div>
       </div>
       <div>
-        <SectionTitle title="Warehouse app" subtitle="What happens behind every number you see" />
+        <SectionTitle title={d.appTitle} subtitle={d.appSub} />
         <ul className="space-y-3 text-dasza-navy/90">
-          <li><strong>Location change</strong> — operators scan a pallet label and its new rack; your inventory location updates instantly.</li>
-          <li><strong>Cycle count</strong> — racks are counted by scanning, with optional photo evidence.</li>
-          <li><strong>Stock by location</strong> — any pallet can be found by location, lot or part number.</li>
-          <li><strong>Shipping request</strong> — each pallet in your order is scanned and photographed before it leaves.</li>
+          {d.appItems.map((it) => (
+            <li key={it.title}><strong>{it.title}</strong>: {it.text}</li>
+          ))}
         </ul>
       </div>
     </div>
@@ -326,30 +316,33 @@ function SectionView({ id, data }: { id: SectionId; data: DemoData }) {
 }
 
 export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; onRestart: () => void }) {
-  const data = useMemo(() => buildDemoData(visitor.company || visitor.name, visitor.materials), [visitor])
+  const { t, lang, href } = useI18n()
+  const d = t.demo
+  const locale = lang === 'es' ? 'es-MX' : 'en-US'
+  const num = (x: number) => x.toLocaleString(locale)
+  const usd = (x: number) => x.toLocaleString(locale, { style: 'currency', currency: 'USD' })
+  const data = useMemo(() => buildDemoData(visitor.company || visitor.name || d.yourCompany, visitor.materials, lang), [visitor, lang, d.yourCompany])
   const [section, setSection] = useState<SectionId>('dashboard')
   const [tourStep, setTourStep] = useState<number | null>(0)
 
   const goTour = (i: number) => {
     setTourStep(i)
-    setSection(TOUR[i].id)
+    setSection(TOUR[i])
   }
-  const step = tourStep !== null ? TOUR[tourStep] : null
+  const step = tourStep !== null ? d.tour[TOUR[tourStep]] : null
   const firstName = visitor.name.split(' ')[0]
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-dasza-navy">
-          Thanks, {firstName}. This is a <strong>demo with fictional data</strong> built for {data.company}.
-        </p>
+        <p className="text-dasza-navy">{fmt(d.thanks, { name: firstName, company: data.company })}</p>
         <div className="flex gap-2">
           {tourStep === null && (
             <button onClick={() => goTour(0)} className="px-4 py-2 rounded-full border border-dasza-navy text-dasza-navy text-sm hover:bg-dasza-navy hover:text-white">
-              Restart guided tour
+              {d.restartTour}
             </button>
           )}
-          <button onClick={onRestart} className="px-4 py-2 rounded-full text-sm text-dasza-navy hover:bg-gray-100">Start over</button>
+          <button onClick={onRestart} className="px-4 py-2 rounded-full text-sm text-dasza-navy hover:bg-gray-100">{d.startOver}</button>
         </div>
       </div>
 
@@ -364,7 +357,7 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
         </div>
 
         <div className="md:grid md:grid-cols-[210px_1fr] min-h-[560px]">
-          <nav aria-label="Demo sections" className="bg-white border-b md:border-b-0 md:border-r border-gray-200">
+          <nav aria-label={d.sections} className="bg-white border-b md:border-b-0 md:border-r border-gray-200">
             <ul className="flex md:flex-col overflow-x-auto md:overflow-visible p-2 gap-1">
               {NAV.map((item) => {
                 const active = section === item.id
@@ -374,7 +367,7 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
                     <button
                       onClick={() => {
                         setSection(item.id)
-                        const ti = TOUR.findIndex((t) => t.id === item.id)
+                        const ti = TOUR.indexOf(item.id)
                         if (tourStep !== null && ti >= 0) setTourStep(ti)
                       }}
                       aria-current={active ? 'page' : undefined}
@@ -383,7 +376,7 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
                       }`}
                     >
                       <Icon className="h-5 w-5 shrink-0" aria-hidden />
-                      {item.label}
+                      {d.nav[item.id]}
                     </button>
                   </li>
                 )
@@ -396,40 +389,40 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
               <div role="status" className="mb-5 rounded-xl border-2 border-dasza-cyan bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-xs font-semibold uppercase tracking-wide text-dasza-navy/60">
-                      Guided tour · {tourStep! + 1} of {TOUR.length}
+                    <div className="text-xs font-semibold text-dasza-navy/60">
+                      {fmt(d.tourOf, { n: tourStep! + 1, total: TOUR.length })}
                     </div>
                     <div className="text-lg font-semibold text-dasza-navy mt-0.5">{step.title}</div>
                   </div>
-                  <button onClick={() => setTourStep(null)} aria-label="Close guided tour" className="p-1 rounded hover:bg-gray-100">
+                  <button onClick={() => setTourStep(null)} aria-label={d.closeTour} className="p-1 rounded hover:bg-gray-100">
                     <XMarkIcon className="h-5 w-5 text-dasza-navy" />
                   </button>
                 </div>
                 <p className="text-dasza-navy/80 mt-1 text-sm">{step.body}</p>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex gap-1" aria-hidden>
-                    {TOUR.map((t, i) => (
-                      <span key={t.id} className={`h-1.5 w-5 rounded-full ${i <= tourStep! ? 'bg-dasza-navy' : 'bg-gray-200'}`} />
+                    {TOUR.map((id, i) => (
+                      <span key={id} className={`h-1.5 w-5 rounded-full ${i <= tourStep! ? 'bg-dasza-navy' : 'bg-gray-200'}`} />
                     ))}
                   </div>
                   <div className="flex gap-2">
                     <button disabled={tourStep === 0} onClick={() => goTour(tourStep! - 1)} className="px-3 py-1.5 rounded-full text-sm text-dasza-navy hover:bg-gray-100 disabled:opacity-40">
-                      Back
+                      {d.back}
                     </button>
                     {tourStep! < TOUR.length - 1 ? (
                       <button onClick={() => goTour(tourStep! + 1)} className="px-4 py-1.5 rounded-md text-sm bg-dasza-ink text-white hover:bg-dasza-charcoal">
-                        Next
+                        {d.next}
                       </button>
                     ) : (
                       <button onClick={() => setTourStep(null)} className="px-4 py-1.5 rounded-md text-sm bg-dasza-ink text-white hover:bg-dasza-charcoal">
-                        Finish & explore
+                        {d.finish}
                       </button>
                     )}
                   </div>
                 </div>
               </div>
             )}
-            <SectionView key={section} id={section} data={data} />
+            <SectionView key={section} id={section} data={data} d={d} num={num} usd={usd} />
           </div>
         </div>
       </div>
@@ -437,12 +430,12 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
       {/* Closing CTA */}
       <div className="rounded-lg bg-dasza-ink text-white p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="text-xl font-semibold">Want to see it with your real operation?</div>
-          <p className="text-white/80 mt-1">Our team will walk you through onboarding, reporting and IMMEX inventory control.</p>
+          <div className="text-xl font-semibold">{d.ctaTitle}</div>
+          <p className="text-white/80 mt-1">{d.ctaText}</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href="/quote" className="px-5 py-2.5 rounded-full bg-white text-dasza-navy font-medium hover:bg-gray-100">Get a quote</Link>
-          <Link href="/contact" className="px-5 py-2.5 rounded-full border border-white/70 text-white font-medium hover:bg-white/10">Talk to our team</Link>
+          <Link href={href('/quote')} className="inline-flex items-center h-11 px-5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white">{d.ctaQuote}</Link>
+          <Link href={href('/contact')} className="inline-flex items-center h-11 px-5 rounded-md border border-white/40 text-white font-medium hover:border-white">{d.ctaTalk}</Link>
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
+'use client'
 import { MAP_W, MAP_H, MEXICO_PATH, USA_PATH, PLACES } from './mexicoMap'
+import { useI18n } from '@/i18n/I18nProvider'
 
 type Pt = { x: number; y: number }
 
@@ -39,6 +41,7 @@ const LABEL: Record<string, { text: string; dx: number; dy: number; anchor?: 'st
 }
 
 export default function RouteMap() {
+  const { t } = useI18n()
   const nodes = Object.entries(P) as [keyof typeof P, (typeof P)[keyof typeof P]][]
   return (
     <figure className="relative">
@@ -48,14 +51,12 @@ export default function RouteMap() {
         role="img"
         aria-labelledby="route-map-title"
       >
-        <title id="route-map-title">
-          Map of Mexico showing freight routes from the ports of Manzanillo, Lázaro Cárdenas, Altamira and Veracruz and the Nuevo Laredo border to DASZA warehouses in Apodaca and Querétaro.
-        </title>
+        <title id="route-map-title">{t.map.title}</title>
         <path d={USA_PATH} fill="#243140" opacity="0.55" />
         <path d={MEXICO_PATH} fill="#2A3A4B" stroke="#4A5F75" strokeWidth="1.2" strokeLinejoin="round" />
-        <text x="560" y="70" fill="#7D8EA0" fontSize="14" letterSpacing="2" className="map-label">USA</text>
-        <text x="200" y="600" fill="#5F7184" fontSize="13" className="map-label">Pacific</text>
-        <text x="760" y="400" fill="#5F7184" fontSize="13" className="map-label">Gulf of Mexico</text>
+        <text x="560" y="70" fill="#7D8EA0" fontSize="14" letterSpacing="2" className="map-label">{t.map.usa}</text>
+        <text x="200" y="600" fill="#5F7184" fontSize="13" className="map-label">{t.map.pacific}</text>
+        <text x="760" y="400" fill="#5F7184" fontSize="13" className="map-label">{t.map.gulf}</text>
 
         {ROUTES.map((r, i) => (
           <g key={i}>
@@ -99,9 +100,9 @@ export default function RouteMap() {
         })}
       </svg>
       <figcaption className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/60">
-        <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-dasza-cyan ring-2 ring-white" /> Dasza warehouse</span>
-        <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#E6ECF1]" /> Port or border crossing</span>
-        <span className="flex items-center gap-2"><span className="h-0.5 w-5 bg-dasza-cyan" /> Freight we coordinate</span>
+        <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-dasza-cyan ring-2 ring-white" /> {t.map.legendWarehouse}</span>
+        <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#E6ECF1]" /> {t.map.legendPort}</span>
+        <span className="flex items-center gap-2"><span className="h-0.5 w-5 bg-dasza-cyan" /> {t.map.legendFreight}</span>
       </figcaption>
     </figure>
   )

@@ -1,16 +1,29 @@
 'use client'
 import Image from 'next/image'
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
-import { PROCESS } from '@/content/site'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { PROCESS_IMAGES } from '@/content/site'
+import { useI18n } from '@/i18n/I18nProvider'
 
-// Desktop: the section pins while you scroll and each scroll segment advances one step.
-// Mobile / reduced motion: a normal list you tap to open each step.
-export default function ProcessSteps({ heading }: { heading: React.ReactNode }) {
+const HEADER = 72
+
+// Desktop: the section pins and each scroll gesture (wheel/trackpad flick) moves exactly one step.
+// Past the first or last step, the page scrolls normally. Tapping a step jumps to it.
+// Phones / reduced motion: a plain list you tap to open each step.
+export default function ProcessSteps() {
+  const { t } = useI18n()
+  const steps = t.process
+  const N = steps.length
   const outer = useRef<HTMLDivElement | null>(null)
   const [active, setActive] = useState(0)
+  const activeRef = useRef(0)
   const [pinned, setPinned] = useState(false)
   const reduce = useReducedMotion()
+
+  const setStep = useCallback((i: number) => {
+    activeRef.current = i
+    setActive(i)
+  }, [])
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')
@@ -21,28 +34,76 @@ export default function ProcessSteps({ heading }: { heading: React.ReactNode }) 
   }, [reduce])
 
   const { scrollYProgress } = useScroll({ target: outer, offset: ['start start', 'end end'] })
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
+  const progress = useSpring(scrollYProgress, { stiffness: 160, damping: 30 })
 
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
     if (!pinned) return
-    setActive(Math.min(PROCESS.length - 1, Math.max(0, Math.floor(p * PROCESS.length))))
+    const i = Math.min(N - 1, Math.max(0, Math.floor(p * N)))
+    if (i !== activeRef.current) setStep(i)
   })
 
+  const scrollToStep = useCallback(
+    (i: number) => {
+      const el = outer.current
+      if (!el) return
+      const top = el.getBoundingClientRect().top + window.scrollY
+      const travel = el.offsetHeight - (window.innerHeight - HEADER)
+      window.scrollTo({ top: top - HEADER + ((i + 0.5) / N) * travel, behavior: 'smooth' })
+    },
+    [N],
+  )
+
   const goTo = (i: number) => {
-    if (!pinned || !outer.current) return setActive(i)
-    const el = outer.current
-    const top = el.getBoundingClientRect().top + window.scrollY
-    const travel = el.offsetHeight - window.innerHeight
-    window.scrollTo({ top: top + ((i + 0.5) / PROCESS.length) * travel, behavior: 'smooth' })
+    setStep(i)
+    if (pinned) scrollToStep(i)
   }
 
-  const step = PROCESS[active]
+  // One step per wheel gesture while pinned. Trackpad momentum is absorbed until the wheel goes quiet.
+  useEffect(() => {
+    if (!pinned) return
+    let locked = false
+    let unlockAfter = 0
+    let quiet: ReturnType<typeof setTimeout> | undefined
+    const release = () => {
+      const wait = unlockAfter - performance.now()
+      if (wait > 0) quiet = setTimeout(release, wait)
+      else locked = false
+    }
+    const onWheel = (e: WheelEvent) => {
+      const el = outer.current
+      if (!el || Math.abs(e.deltaY) < 2) return
+      const r = el.getBoundingClientRect()
+      const inPin = r.top <= HEADER + 4 && r.bottom >= window.innerHeight - 4
+      if (!inPin) return
+      const dir = e.deltaY > 0 ? 1 : -1
+      const next = activeRef.current + dir
+      if (!locked && (next < 0 || next >= N)) return // let the page continue past the section
+      e.preventDefault()
+      clearTimeout(quiet)
+      quiet = setTimeout(release, 140)
+      if (locked) return
+      locked = true
+      unlockAfter = performance.now() + 420
+      setStep(next)
+      scrollToStep(next)
+    }
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => {
+      window.removeEventListener('wheel', onWheel)
+      clearTimeout(quiet)
+    }
+  }, [pinned, N, scrollToStep, setStep])
+
+  const step = steps[active]
 
   return (
-    <div ref={outer} className={pinned ? 'relative h-[440vh]' : 'relative'}>
+    <div ref={outer} className={pinned ? 'relative h-[340vh]' : 'relative'}>
       <div className={pinned ? 'sticky top-[72px] h-[calc(100vh-72px)] flex flex-col justify-center' : ''}>
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
-          {heading}
+          <div className="max-w-2xl mb-8 lg:mb-10">
+            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>
+            <p className="mt-4 text-lg text-dasza-navy leading-relaxed">{t.home.howText}</p>
+          </div>
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             <div className="lg:col-span-5 relative">
               {pinned && (
@@ -51,7 +112,7 @@ export default function ProcessSteps({ heading }: { heading: React.ReactNode }) 
                 </div>
               )}
               <ol className="border-t border-dasza-line">
-                {PROCESS.map((s, i) => {
+                {steps.map((s, i) => {
                   const on = i === active
                   return (
                     <li key={s.title} className="border-b border-dasza-line">
@@ -68,7 +129,7 @@ export default function ProcessSteps({ heading }: { heading: React.ReactNode }) 
                           <span className={`block font-display text-xl md:text-2xl font-semibold transition-colors ${on ? 'text-dasza-ink' : 'text-dasza-navy/60 group-hover:text-dasza-ink'}`}>
                             {s.title}
                           </span>
-                          <span className={`grid transition-[grid-template-rows,opacity] duration-500 ${on ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                          <span className={`grid transition-[grid-template-rows,opacity] duration-300 ${on ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                             <span className="overflow-hidden">
                               <span className="block pt-2 text-dasza-navy leading-relaxed max-w-md">{s.text}</span>
                             </span>
@@ -79,26 +140,27 @@ export default function ProcessSteps({ heading }: { heading: React.ReactNode }) 
                   )
                 })}
               </ol>
+              <p className="mt-4 text-sm text-dasza-navy/70">{t.home.stepHint}</p>
             </div>
 
             <div className="lg:col-span-7">
-              <div className="relative aspect-[4/3] lg:aspect-auto lg:h-[54vh] overflow-hidden rounded-lg bg-dasza-paper">
-                {PROCESS.map((s, i) => (
+              <div className="relative aspect-[4/3] lg:aspect-auto lg:h-[52vh] overflow-hidden rounded-lg bg-dasza-paper">
+                {PROCESS_IMAGES.map((src, i) => (
                   <motion.div
-                    key={s.image}
+                    key={src}
                     className="absolute inset-0"
                     initial={false}
-                    animate={{ opacity: i === active ? 1 : 0, scale: i === active ? 1 : 1.06 }}
-                    transition={{ duration: reduce ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] }}
+                    animate={{ opacity: i === active ? 1 : 0, scale: i === active ? 1 : 1.05 }}
+                    transition={{ duration: reduce ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <Image src={s.image} alt="" fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
+                    <Image src={src} alt="" fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
                   </motion.div>
                 ))}
                 <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-4 bg-gradient-to-t from-dasza-ink/70 to-transparent">
                   <span className="px-3 py-1.5 rounded bg-dasza-ink/85 text-white text-sm">{step.place}</span>
                   <span className="flex gap-1.5" aria-hidden>
-                    {PROCESS.map((_, i) => (
-                      <span key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === active ? 'w-8 bg-dasza-cyan' : 'w-3 bg-white/50'}`} />
+                    {steps.map((_, i) => (
+                      <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === active ? 'w-8 bg-dasza-cyan' : 'w-3 bg-white/50'}`} />
                     ))}
                   </span>
                 </div>
