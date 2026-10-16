@@ -53,6 +53,10 @@ export const en = {
     heroText:
       'DASZA imports your materials under our IMMEX AAA program, clears customs with our own broker, stores them in bonded warehouses in Apodaca and Querétaro, and delivers to your plant on schedule.',
     seeHow: 'See how it works',
+    videoLabel: 'Top-down aerial view of a container ship sailing at sea',
+    scrollHint: 'Scroll',
+    mapTitle: 'Mexico’s main gateways, connected to our warehouses',
+    mapText: 'We clear cargo at Manzanillo, Lázaro Cárdenas, Altamira, Veracruz and Nuevo Laredo, and move it to our warehouses in Apodaca and Querétaro.',
     howTitle: 'One partner from the port to your plant',
     howText: 'Instead of coordinating a customs broker, a carrier and a warehouse separately, you work with one team and see everything in one system.',
     servicesTitle: 'What we do for manufacturers',

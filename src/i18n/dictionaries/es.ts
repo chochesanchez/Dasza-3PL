@@ -55,6 +55,10 @@ export const es: Dict = {
     heroText:
       'DASZA importa tus materiales bajo nuestro programa IMMEX AAA, los despacha con nuestro propio agente aduanal, los guarda en nuestros almacenes de Apodaca y Querétaro y los entrega en tu planta a tiempo.',
     seeHow: 'Ver cómo funciona',
+    videoLabel: 'Vista aérea cenital de un buque portacontenedores navegando en el mar',
+    scrollHint: 'Desliza',
+    mapTitle: 'Las principales entradas a México, conectadas con nuestros almacenes',
+    mapText: 'Despachamos carga en Manzanillo, Lázaro Cárdenas, Altamira, Veracruz y Nuevo Laredo, y la llevamos a nuestros almacenes en Apodaca y Querétaro.',
     howTitle: 'Un solo socio del puerto a tu planta',
     howText: 'En lugar de coordinar por separado un agente aduanal, un transportista y un almacén, trabajas con un solo equipo y ves todo en un solo sistema.',
     servicesTitle: 'Lo que hacemos por la manufactura',
