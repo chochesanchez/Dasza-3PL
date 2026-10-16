@@ -10,6 +10,7 @@ import ServiceIndex from '@/components/home/ServiceIndex'
 import SystemPreview from '@/components/home/SystemPreview'
 import LogoMarquee from '@/components/home/LogoMarquee'
 import Sites from '@/components/home/Sites'
+import VideoHero from '@/components/home/VideoHero'
 import CountUp from '@/components/motion/CountUp'
 import ParallaxImage from '@/components/motion/ParallaxImage'
 import { FACT_VALUES, CERTIFICATIONS, COMPANY } from '@/content/site'
@@ -28,30 +29,42 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        {/* Hero */}
-        <section className="bg-dasza-ink text-white overflow-hidden">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 md:pt-20 pb-12 grid lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-x-6 gap-y-8 items-center">
-            <h1 className="lg:col-span-5 lg:self-end font-display text-[2.5rem] leading-[1.02] sm:text-6xl lg:text-[3.55rem] font-semibold">
-              {t.home.heroTitle}
-            </h1>
-            <div className="lg:col-span-7 lg:col-start-6 lg:row-span-2 lg:row-start-1 lg:-mr-8">
-              <RouteMap />
-            </div>
-            <div className="lg:col-span-5 lg:self-start">
-              <p className="text-lg text-white/75 leading-relaxed max-w-lg">{t.home.heroText}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href={href('/quote')} className="inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
-                  {t.common.getQuote}
-                </Link>
-                <Link href="#how-it-works" className="inline-flex items-center h-12 px-6 rounded-md border border-white/30 hover:border-white transition-colors">
-                  {t.home.seeHow}
-                </Link>
-              </div>
+        {/* Hero: looping sea video pinned under the header */}
+        <VideoHero
+          desktop={{ mp4: '/videos/dasza-ship-1080.mp4', webm: '/videos/dasza-ship-1080.webm' }}
+          mobile={{ mp4: '/videos/dasza-ship-720.mp4', webm: '/videos/dasza-ship-720.webm' }}
+          poster="/videos/dasza-ship-poster.jpg"
+          label={t.home.videoLabel}
+          scrollHint={t.home.scrollHint}
+        >
+          <h1 className="font-display text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-semibold max-w-4xl">{t.home.heroTitle}</h1>
+          <p className="mt-5 text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">{t.home.heroText}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href={href('/quote')} className="inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
+              {t.common.getQuote}
+            </Link>
+            <Link href="#how-it-works" className="inline-flex items-center h-12 px-6 rounded-md border border-white/40 backdrop-blur-sm hover:border-white transition-colors">
+              {t.home.seeHow}
+            </Link>
+          </div>
+        </VideoHero>
+
+        {/* Content layer: slides up over the pinned video */}
+        <div className="relative z-10 -mt-6 rounded-t-[28px] overflow-clip bg-white shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.35)]">
+        {/* Gateways map + facts */}
+        <section className="bg-dasza-ink text-white">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-16 md:pt-24 pb-12 grid lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-5">
+              <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.mapTitle}</h2>
+              <p className="mt-5 text-lg text-white/75 leading-relaxed">{t.home.mapText}</p>
               <ul className="mt-8 flex flex-wrap gap-2" aria-label={t.common.certifications}>
                 {CERTIFICATIONS.map((c) => (
                   <li key={c} className="px-2.5 py-1 rounded border border-white/20 text-xs text-white/75">{c}</li>
                 ))}
               </ul>
+            </div>
+            <div className="lg:col-span-7 lg:-mr-8">
+              <RouteMap />
             </div>
           </div>
           <div className="border-t border-white/10">
@@ -140,6 +153,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <ContactForm />
           </div>
         </section>
+        </div>
       </main>
       <Footer />
     </div>

@@ -102,7 +102,6 @@ export default function ProcessSteps() {
                   )
                 })}
               </ol>
-              <p className="mt-4 text-sm text-dasza-navy/70">{t.home.stepHint}</p>
             </div>
 
             <div className="lg:col-span-7">

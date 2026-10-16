@@ -1,16 +1,19 @@
 'use client'
-import { motion, useReducedMotion } from 'framer-motion'
+import { useInView } from 'framer-motion'
+import { useRef } from 'react'
 import { SITE_AREAS } from '@/content/site'
 import CountUp from '@/components/motion/CountUp'
 import { useI18n } from '@/i18n/I18nProvider'
 
 export default function Sites() {
   const { t } = useI18n()
-  const reduce = useReducedMotion()
+  // One observer for the whole list: when it's on screen, every bar fills (CSS transition, staggered).
+  const listRef = useRef<HTMLUListElement | null>(null)
+  const shown = useInView(listRef, { once: true, amount: 0.2 })
   const max = Math.max(...SITE_AREAS)
   return (
     <div className="grid lg:grid-cols-12 gap-10">
-      <ul className="lg:col-span-8 space-y-8">
+      <ul ref={listRef} className="lg:col-span-8 space-y-8">
         {t.sites.items.map((s, i) => (
           <li key={s.name}>
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
@@ -20,13 +23,9 @@ export default function Sites() {
               </span>
             </div>
             <div className="mt-3 h-3 rounded-sm bg-dasza-paper overflow-hidden" aria-hidden>
-              <motion.div
-                className="h-full bg-dasza-cyan origin-left"
-                style={{ width: `${(SITE_AREAS[i] / max) * 100}%` }}
-                initial={reduce ? false : { scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 1.1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              <div
+                className={`h-full bg-dasza-cyan origin-left transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${shown ? 'scale-x-100' : 'scale-x-0'}`}
+                style={{ width: `${(SITE_AREAS[i] / max) * 100}%`, transitionDelay: `${i * 150}ms` }}
               />
             </div>
             <p className="mt-3 text-sm font-medium text-dasza-ink">{s.location}</p>
