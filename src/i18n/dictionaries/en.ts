@@ -52,9 +52,7 @@ export const en = {
     heroTitle: 'From the port to your production line.',
     heroText:
       'DASZA imports your materials under our IMMEX AAA program, clears customs with our own broker, stores them in bonded warehouses in Apodaca and Querétaro, and delivers to your plant on schedule.',
-    seeHow: 'See how it works',
     videoLabel: 'Top-down aerial view of a container ship sailing at sea',
-    scrollHint: 'Scroll',
     mapTitle: 'Mexico’s main gateways, connected to our warehouses',
     mapText: 'We clear cargo at Manzanillo, Lázaro Cárdenas, Altamira, Veracruz and Nuevo Laredo, and move it to our warehouses in Apodaca and Querétaro.',
     howTitle: 'One partner from the port to your plant',
@@ -286,13 +284,16 @@ export const en = {
   },
   map: {
     title:
-      'Map of Mexico showing freight routes from the ports of Manzanillo, Lázaro Cárdenas, Altamira and Veracruz and the Nuevo Laredo border to DASZA warehouses in Apodaca and Querétaro.',
+      'Map of Mexico showing ocean routes from Asia to Manzanillo and Lázaro Cárdenas and from Europe to Altamira and Veracruz, plus the Nuevo Laredo border, with freight routes from each to DASZA warehouses in Apodaca and Querétaro.',
     usa: 'USA',
     pacific: 'Pacific',
     gulf: 'Gulf of Mexico',
     legendWarehouse: 'Dasza warehouse',
     legendPort: 'Port or border crossing',
     legendFreight: 'Freight we coordinate',
+    legendOcean: 'Ocean routes from Asia and Europe',
+    asia: 'Asia',
+    europe: 'Europe',
   },
   preview: {
     header: 'Inventory',
@@ -344,6 +345,8 @@ export const en = {
     other: 'Other',
     company: 'Company',
     need: 'What do you need?',
+    needPh: 'Select all that apply',
+    needCount: '{n} selected',
     solutions: ['Warehousing', 'IMMEX / Shelter', 'VMI', 'Customs', 'Transportation', 'Last mile', 'Fulfillment', 'Other'],
     message: 'Message (optional)',
     messagePh: 'Tell us briefly about your operation',
