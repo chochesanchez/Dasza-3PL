@@ -1,11 +1,13 @@
 'use client'
 import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
+import MultiSelect from '@/components/ui/MultiSelect'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { PHONE_COUNTRIES, WHATSAPP_NUMBER } from '@/lib/phoneCountries'
 import { COMPANY } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
 import { fmt } from '@/i18n/dictionaries'
+import TextButton from '@/components/ui/TextButton'
 
 const inputCls =
   'mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan'
@@ -104,25 +106,14 @@ export default function ContactForm() {
           </label>
         </div>
 
-        <fieldset>
-          <legend className="text-sm font-medium text-dasza-ink">{f.need}</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {f.solutions.map((opt) => {
-              const on = selected.includes(opt)
-              return (
-                <button
-                  type="button"
-                  key={opt}
-                  aria-pressed={on}
-                  onClick={() => toggle(opt)}
-                  className={`h-9 px-3.5 rounded-md border text-sm transition-colors ${on ? 'bg-dasza-ink border-dasza-ink text-white' : 'border-dasza-line text-dasza-ink hover:border-dasza-ink'}`}
-                >
-                  {opt}
-                </button>
-              )
-            })}
-          </div>
-        </fieldset>
+        <MultiSelect
+          label={f.need}
+          options={f.solutions}
+          selected={selected}
+          onToggle={toggle}
+          placeholder={f.needPh}
+          countLabel={(n) => fmt(f.needCount, { n })}
+        />
 
         <label className="block text-sm font-medium text-dasza-ink">
           {f.message}
@@ -141,21 +132,9 @@ export default function ContactForm() {
           <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
             <p className="font-medium">{f.failTitle}</p>
             <p className="mt-1">{f.failText}</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(failedMessage)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-medium hover:brightness-95"
-              >
-                {f.viaWhatsapp}
-              </a>
-              <a
-                href={`mailto:${COMPANY.email}?subject=${encodeURIComponent(f.emailSubject)}&body=${encodeURIComponent(failedMessage)}`}
-                className="inline-flex items-center h-10 px-4 rounded-md border border-red-300 text-red-800 hover:bg-red-100"
-              >
-                {f.viaEmail}
-              </a>
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+              <TextButton href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(failedMessage)}`} newTab>{f.viaWhatsapp}</TextButton>
+              <TextButton href={`mailto:${COMPANY.email}?subject=${encodeURIComponent(f.emailSubject)}&body=${encodeURIComponent(failedMessage)}`}>{f.viaEmail}</TextButton>
             </div>
           </div>
         )}
@@ -183,9 +162,9 @@ export default function ContactForm() {
             <div><dt className="text-white/60">{f.asideOffice}</dt><dd className="leading-relaxed">{COMPANY.office}</dd></div>
           </div>
         </dl>
-        <div className="mt-auto pt-8 flex flex-wrap gap-2">
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-semibold">{f.asideWhatsapp}</a>
-          <a href={COMPANY.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center h-10 px-4 rounded-md border border-white/30 hover:border-white">{f.asideMaps}</a>
+        <div className="mt-auto pt-8 flex flex-wrap gap-x-6 gap-y-3">
+          <TextButton href={`https://wa.me/${WHATSAPP_NUMBER}`} tone="dark" newTab>{f.asideWhatsapp}</TextButton>
+          <TextButton href={COMPANY.mapsUrl} tone="dark" newTab>{f.asideMaps}</TextButton>
         </div>
       </aside>
       <Modal open={ok} onClose={() => setOk(false)} title={f.sentTitle} status="success" closeLabel={t.common.close}>
