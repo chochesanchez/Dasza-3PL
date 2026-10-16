@@ -11,7 +11,7 @@ const STEP_PX = 100
 
 // Desktop: the section pins while you scroll; every STEP_PX of normal scrolling advances one step.
 // Scrolling is never intercepted. Tapping a step scrolls to it.
-// Phones / reduced motion: a plain list you tap to open each step.
+// Phones / reduced motion: every step open, each with its photo below the text. Nothing to tap.
 export default function ProcessSteps() {
   const { t } = useI18n()
   const steps = t.process
@@ -53,14 +53,39 @@ export default function ProcessSteps() {
 
   const goTo = (i: number) => {
     setStep(i)
-    if (pinned) scrollToStep(i)
+    scrollToStep(i)
   }
 
   const step = steps[active]
 
+  if (!pinned) {
+    // Keeps `outer` attached: useScroll needs its target mounted in both layouts.
+    return (
+      <div ref={outer} className="mx-auto w-full max-w-7xl px-5 sm:px-8">
+        <div className="max-w-2xl mb-8">
+          <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>
+          <p className="mt-4 text-lg text-dasza-navy leading-relaxed">{t.home.howText}</p>
+        </div>
+        <ol className="space-y-10 sm:grid sm:grid-cols-2 sm:gap-x-8 sm:gap-y-12 sm:space-y-0">
+          {steps.map((s, i) => (
+            <li key={s.title} className="border-t border-dasza-line pt-5">
+              <span className="font-display text-lg tabular-nums text-dasza-cyan600">{String(i + 1).padStart(2, '0')}</span>
+              <h3 className="mt-1 font-display text-xl md:text-2xl font-semibold text-dasza-ink">{s.title}</h3>
+              <p className="mt-2 text-dasza-navy leading-relaxed">{s.text}</p>
+              <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-lg bg-dasza-paper">
+                <Image src={PROCESS_IMAGES[i]} alt="" fill sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" />
+                <span className="absolute left-3 bottom-3 px-3 py-1.5 rounded bg-dasza-ink/85 text-white text-sm">{s.place}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+
   return (
-    <div ref={outer} className="relative" style={pinned ? { height: `calc(100vh - ${HEADER}px + ${N * STEP_PX}px)` } : undefined}>
-      <div className={pinned ? 'sticky top-[72px] h-[calc(100vh-72px)] flex flex-col justify-center' : ''}>
+    <div ref={outer} className="relative" style={{ height: `calc(100vh - ${HEADER}px + ${N * STEP_PX}px)` }}>
+      <div className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col justify-center">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
           <div className="max-w-2xl mb-8 lg:mb-10">
             <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>
@@ -68,11 +93,9 @@ export default function ProcessSteps() {
           </div>
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             <div className="lg:col-span-5 relative">
-              {pinned && (
-                <div className="absolute -left-4 top-0 bottom-0 w-[3px] bg-dasza-line rounded-full overflow-hidden" aria-hidden>
-                  <motion.div className="w-full h-full bg-dasza-cyan origin-top" style={{ scaleY: progress }} />
-                </div>
-              )}
+              <div className="absolute -left-4 top-0 bottom-0 w-[3px] bg-dasza-line rounded-full overflow-hidden" aria-hidden>
+                <motion.div className="w-full h-full bg-dasza-cyan origin-top" style={{ scaleY: progress }} />
+              </div>
               <ol className="border-t border-dasza-line">
                 {steps.map((s, i) => {
                   const on = i === active
@@ -105,7 +128,7 @@ export default function ProcessSteps() {
             </div>
 
             <div className="lg:col-span-7">
-              <div className="relative aspect-[4/3] lg:aspect-auto lg:h-[52vh] overflow-hidden rounded-lg bg-dasza-paper">
+              <div className="relative h-[52vh] overflow-hidden rounded-lg bg-dasza-paper">
                 {PROCESS_IMAGES.map((src, i) => (
                   <motion.div
                     key={src}

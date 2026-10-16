@@ -34,8 +34,11 @@ export default function Header() {
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    if (open) document.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
     }
   }, [open])
 
@@ -86,16 +89,18 @@ export default function Header() {
         </div>
       </div>
 
-      <div id="mobile-menu" hidden={!open} className="lg:hidden fixed inset-x-0 top-16 bottom-0 bg-white overflow-y-auto">
-        <nav aria-label={t.nav.mobile} className="px-5 py-6 flex flex-col">
+      {/* Mobile menu: drops down only as tall as its content; tapping the dimmed page closes it */}
+      {open && <div className="lg:hidden fixed inset-x-0 top-16 md:top-[72px] bottom-0 bg-dasza-ink/30" onClick={() => setOpen(false)} aria-hidden />}
+      <div id="mobile-menu" hidden={!open} className="lg:hidden absolute inset-x-0 top-full bg-white rounded-b-xl shadow-[0_16px_32px_-12px_rgba(0,0,0,0.3)] border-t border-dasza-line">
+        <nav aria-label={t.nav.mobile} className="px-5 pt-2 pb-5 flex flex-col">
           {NAV.map((item) => (
-            <Link key={item.path} href={href(item.path)} className="font-display text-2xl py-4 border-b border-dasza-line text-dasza-ink">
+            <Link key={item.path} href={href(item.path)} onClick={() => setOpen(false)} className="font-display text-xl py-3 border-b border-dasza-line text-dasza-ink">
               {item.label}
             </Link>
           ))}
-          <div className="mt-8 flex items-center justify-between gap-4">
-            <LanguageSwitch />
-            <Link href={href('/quote')} className="flex-1 inline-flex justify-center items-center h-12 rounded-md bg-dasza-cyan text-dasza-ink font-semibold">
+          <div className="mt-5 flex items-center justify-between gap-4">
+            <LanguageSwitch up />
+            <Link href={href('/quote')} onClick={() => setOpen(false)} className="flex-1 inline-flex justify-center items-center h-12 rounded-md bg-dasza-cyan text-dasza-ink font-semibold">
               {t.nav.quote}
             </Link>
           </div>

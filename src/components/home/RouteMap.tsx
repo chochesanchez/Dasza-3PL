@@ -14,13 +14,16 @@ function curve(a: Pt, b: Pt, bend = 0.18) {
 }
 
 const P = PLACES
-const pacific = { x: 250, y: 560 }
-const gulf = { x: 860, y: 300 }
+// Ocean lanes start at the map edge: Asia across the Pacific, Europe across the Gulf/Atlantic.
+const asia = { x: 128, y: 590 }
+const europe = { x: 955, y: 318 }
 const north = { x: 600, y: 40 }
 
 const ROUTES: { d: string; sea?: boolean; delay: number }[] = [
-  { d: curve(pacific, P.manzanillo, -0.15), sea: true, delay: 0.2 },
-  { d: curve(gulf, P.altamira, 0.12), sea: true, delay: 0.35 },
+  { d: curve(asia, P.manzanillo, -0.12), sea: true, delay: 0.2 },
+  { d: curve(asia, P.lazaro, -0.06), sea: true, delay: 0.3 },
+  { d: curve(europe, P.altamira, 0.08), sea: true, delay: 0.35 },
+  { d: curve(europe, P.veracruz, -0.1), sea: true, delay: 0.45 },
   { d: curve(north, P.laredo, 0.1), delay: 0.5 },
   { d: curve(P.manzanillo, P.queretaro, 0.12), delay: 0.9 },
   { d: curve(P.lazaro, P.queretaro, -0.12), delay: 1.0 },
@@ -55,8 +58,10 @@ export default function RouteMap() {
         <path d={USA_PATH} fill="#243140" opacity="0.55" />
         <path d={MEXICO_PATH} fill="#2A3A4B" stroke="#4A5F75" strokeWidth="1.2" strokeLinejoin="round" />
         <text x="560" y="70" fill="#7D8EA0" fontSize="14" letterSpacing="2" className="map-label">{t.map.usa}</text>
-        <text x="200" y="600" fill="#5F7184" fontSize="13" className="map-label">{t.map.pacific}</text>
-        <text x="760" y="400" fill="#5F7184" fontSize="13" className="map-label">{t.map.gulf}</text>
+        <text x="300" y="604" fill="#5F7184" fontSize="13" className="map-label map-label-minor">{t.map.pacific}</text>
+        <text x="745" y="300" fill="#5F7184" fontSize="13" className="map-label map-label-minor">{t.map.gulf}</text>
+        <text x={asia.x + 4} y={asia.y - 14} fill="#C9D3DC" fontSize="15" fontWeight="700" letterSpacing="1" className="map-label">{t.map.asia}</text>
+        <text x={europe.x - 4} y={europe.y - 14} textAnchor="end" fill="#C9D3DC" fontSize="15" fontWeight="700" letterSpacing="1" className="map-label">{t.map.europe}</text>
 
         {ROUTES.map((r, i) => (
           <g key={i}>
@@ -103,6 +108,7 @@ export default function RouteMap() {
         <span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-dasza-cyan ring-2 ring-white" /> {t.map.legendWarehouse}</span>
         <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#E6ECF1]" /> {t.map.legendPort}</span>
         <span className="flex items-center gap-2"><span className="h-0.5 w-5 bg-dasza-cyan" /> {t.map.legendFreight}</span>
+        <span className="flex items-center gap-2"><span className="h-0.5 w-5 bg-[#7D8EA0]" /> {t.map.legendOcean}</span>
       </figcaption>
     </figure>
   )

@@ -1,12 +1,12 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { usePathname } from 'next/navigation'
 import { COMPANY, SERVICES, CERTIFICATIONS } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
 import { basePath } from '@/i18n/config'
 import LanguageSwitch from './LanguageSwitch'
+import TextButton from '@/components/ui/TextButton'
 
 export default function Footer() {
   const { t, href } = useI18n()
@@ -22,13 +22,7 @@ export default function Footer() {
               <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05] max-w-2xl">{t.footer.ctaTitle}</h2>
               <p className="mt-4 text-white/70 max-w-xl">{t.footer.ctaText}</p>
             </div>
-            <Link
-              href={href('/contact')}
-              className="group inline-flex items-center justify-center gap-3 h-16 px-10 rounded-md bg-dasza-cyan text-dasza-ink text-lg font-semibold hover:bg-white transition-colors w-full md:w-auto"
-            >
-              {t.footer.ctaButton}
-              <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden />
-            </Link>
+            <TextButton href={href('/contact')} tone="dark" size="lg">{t.footer.ctaButton}</TextButton>
           </div>
         </div>
       )}
@@ -45,7 +39,7 @@ export default function Footer() {
               <li key={c} className="px-2.5 py-1 rounded border border-white/20 text-xs text-white/80">{c}</li>
             ))}
           </ul>
-          <div className="mt-6"><LanguageSwitch tone="dark" /></div>
+          <div className="mt-6"><LanguageSwitch tone="dark" up /></div>
         </div>
 
         <div className="md:col-span-3">

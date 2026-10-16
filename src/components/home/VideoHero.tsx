@@ -1,7 +1,6 @@
 'use client'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { useEffect, useRef } from 'react'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
 type Sources = { mp4: string; webm: string }
 
@@ -12,14 +11,12 @@ export default function VideoHero({
   mobile,
   poster,
   label,
-  scrollHint,
   children,
 }: {
   desktop: Sources
   mobile: Sources
   poster: string
   label: string
-  scrollHint: string
   children: React.ReactNode
 }) {
   const video = useRef<HTMLVideoElement | null>(null)
@@ -67,18 +64,10 @@ export default function VideoHero({
         <source src={desktop.webm} type="video/webm" />
         <source src={desktop.mp4} type="video/mp4" />
       </video>
-      {/* Brand-tinted overlay keeps white text readable over the moving water */}
-      <div className="absolute inset-0 bg-gradient-to-t from-dasza-ink/90 via-dasza-ink/45 to-dasza-ink/20" aria-hidden />
-      <motion.div style={reduce ? undefined : { opacity, y }} className="relative h-full mx-auto max-w-7xl px-5 sm:px-8 flex flex-col justify-end pb-16 md:pb-24 text-white">
+      {/* Light tint; the bottom gradient keeps the headline readable while the ship stays visible */}
+      <div className="absolute inset-0 bg-gradient-to-t from-dasza-ink/80 via-dasza-ink/10 to-transparent" aria-hidden />
+      <motion.div style={reduce ? undefined : { opacity, y }} className="relative h-full mx-auto max-w-7xl px-5 sm:px-8 flex flex-col justify-end pb-14 md:pb-20 text-white">
         {children}
-      </motion.div>
-      <motion.div
-        style={reduce ? undefined : { opacity }}
-        className="absolute bottom-5 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-1 text-white/70 text-xs"
-        aria-hidden
-      >
-        <span>{scrollHint}</span>
-        <ChevronDownIcon className="h-5 w-5 motion-safe:animate-bounce" />
       </motion.div>
     </div>
   )

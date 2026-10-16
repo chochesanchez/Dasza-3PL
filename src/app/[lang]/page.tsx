@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
@@ -35,18 +34,11 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           mobile={{ mp4: '/videos/dasza-ship-720.mp4', webm: '/videos/dasza-ship-720.webm' }}
           poster="/videos/dasza-ship-poster.jpg"
           label={t.home.videoLabel}
-          scrollHint={t.home.scrollHint}
         >
-          <h1 className="font-display text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-semibold max-w-4xl">{t.home.heroTitle}</h1>
-          <p className="mt-5 text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">{t.home.heroText}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={href('/quote')} className="inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
-              {t.common.getQuote}
-            </Link>
-            <Link href="#how-it-works" className="inline-flex items-center h-12 px-6 rounded-md border border-white/40 backdrop-blur-sm hover:border-white transition-colors">
-              {t.home.seeHow}
-            </Link>
-          </div>
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.08] max-w-2xl">{t.home.heroTitle}</h1>
+          <p className="mt-4 text-base md:text-lg text-white/85 leading-relaxed max-w-xl">{t.home.heroText}</p>
+          {/* Phones only: from sm up the header already shows "Get a quote" */}
+          <div className="sm:hidden mt-5"><TextButton href={href('/quote')} tone="dark">{t.common.getQuote}</TextButton></div>
         </VideoHero>
 
         {/* Content layer: slides up over the pinned video */}
@@ -107,9 +99,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <div className="lg:col-span-5">
               <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.systemTitle}</h2>
               <p className="mt-5 text-lg text-white/75 leading-relaxed">{t.home.systemText}</p>
-              <Link href={href('/dasza-system')} className="mt-8 inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
-                {t.home.systemCta}
-              </Link>
+              <div className="mt-8"><TextButton href={href('/dasza-system')} tone="dark">{t.home.systemCta}</TextButton></div>
             </div>
             <div className="lg:col-span-7">
               <SystemPreview />
@@ -135,9 +125,11 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <section className="pb-20 md:pb-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-8 flex flex-wrap items-end justify-between gap-6 mb-8">
             <h2 className="font-display text-3xl md:text-4xl font-semibold leading-[1.1] max-w-2xl">{t.home.clientsTitle}</h2>
-            <TextButton href={href('/about#clients')}>{t.common.seeAllClients}</TextButton>
+            <span className="hidden sm:block"><TextButton href={href('/about#clients')}>{t.common.seeAllClients}</TextButton></span>
           </div>
           <LogoMarquee />
+          {/* Phones: the link sits under the strip */}
+          <div className="sm:hidden mt-6 px-5"><TextButton href={href('/about#clients')}>{t.common.seeAllClients}</TextButton></div>
         </section>
 
         {/* Contact */}
