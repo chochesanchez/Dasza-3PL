@@ -16,6 +16,12 @@ function str(v: unknown): string | undefined {
   return undefined
 }
 
+// Comma-separated list in LEADS_TO (or a route-specific variable); the current inbox is the fallback.
+export function leadRecipients(value = process.env.LEADS_TO): string[] {
+  const list = (value || '').split(',').map((s) => s.trim()).filter(Boolean)
+  return list.length ? list : ['jmsanchez@dasza.com']
+}
+
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string)
 }
@@ -48,6 +54,7 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
   const service = isRecord(root['service']) ? (root['service'] as Record<string, unknown>) : undefined
   const options = isRecord(root['options']) ? (root['options'] as Record<string, unknown>) : undefined
   const comments = str(root['comments'])
+  const conditions = service && Array.isArray(service['conditions']) ? service['conditions'].map(String) : []
 
   const row = (k: string, v?: string) => (
     v
@@ -86,7 +93,8 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
         row('Frequency', str(service['frequency'])),
         row('Destinations', str(service['destinations'])),
         row('Timing', str(service['timing'])),
-        str(service['storageRequired']) === 'true' ? row('Storage Required', 'Yes') : '',
+        service['storageRequired'] === true ? row('Storage Required', 'Yes') : '',
+        row('Special handling', conditions.join(', ') || undefined),
       ].join('')
     : ''
   const optionsListItems = options
@@ -152,12 +160,15 @@ export async function sendQuoteEmail(doc: QuoteDoc) {
     line('HS Code', str(trade['hsCode'])),
     line('Origin', str(trade['origin'])),
     line('Incoterm', str(trade['incoterm'])),
+    line('Frequency', service ? str(service['frequency']) : undefined),
+    service?.['storageRequired'] === true ? 'Storage required: Yes' : '',
+    conditions.length ? `Special handling: ${conditions.join(', ')}` : '',
     comments ? `\nComments: ${comments}` : '',
   ].filter(Boolean).join('\n')
 
   const { error } = await resend.emails.send({
     from: `Dasza 3PL <${fromAddress}>`,
-    to: ['jmsanchez@dasza.com'],
+    to: leadRecipients(),
     subject: `${heading} — ${subjectCompany}`,
     text,
     html,
