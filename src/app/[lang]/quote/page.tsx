@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
@@ -10,10 +10,13 @@ import { COMPANY } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
 import { fmt } from '@/i18n/dictionaries'
 import TextButton from '@/components/ui/TextButton'
+import type { Dict } from '@/i18n/dictionaries/en'
 
 const inputCls =
   'mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan'
 const labelCls = 'block text-sm font-medium text-dasza-ink'
+
+type NeedKey = keyof Dict['quote']['needOptions']
 
 type Answers = {
   name: string
@@ -25,7 +28,7 @@ type Answers = {
   quantity: string
   origin: string
   hsCode: string
-  needs: string[]
+  needs: NeedKey[]
   frequency: string
   handling: string[]
   comments: string
@@ -70,9 +73,15 @@ export default function QuotePage() {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [failed, setFailed] = useState<string | null>(null)
+  const [honeypot, setHoneypot] = useState('')
+  const startedAt = useRef(0)
+  useEffect(() => {
+    startedAt.current = Date.now()
+  }, [])
 
   const set = <K extends keyof Answers>(k: K, v: Answers[K]) => setA((p) => ({ ...p, [k]: v }))
-  const toggle = (k: 'needs' | 'handling', v: string) => set(k, a[k].includes(v) ? a[k].filter((x) => x !== v) : [...a[k], v])
+  const toggleNeed = (v: NeedKey) => set('needs', a.needs.includes(v) ? a.needs.filter((x) => x !== v) : [...a.needs, v])
+  const toggleHandling = (v: string) => set('handling', a.handling.includes(v) ? a.handling.filter((x) => x !== v) : [...a.handling, v])
   const next = (e: React.FormEvent) => {
     e.preventDefault()
     setStep((s) => Math.min(2, s + 1))
@@ -82,17 +91,20 @@ export default function QuotePage() {
     e.preventDefault()
     const country = PHONE_COUNTRIES.find((c) => c.code === a.phoneCountry) ?? PHONE_COUNTRIES[0]
     const phone = a.phone ? `${country.dial} ${a.phone}`.trim() : ''
+    const needLabels = a.needs.map((k) => q.needOptions[k])
     const payload = {
       contact: { name: a.name, email: a.email, phone, company: a.company, phoneCountry: country.label },
       product: { type: a.product, volume: a.quantity },
       trade: { hsCode: a.hsCode || undefined, origin: a.origin },
       service: {
         frequency: a.frequency || undefined,
-        storageRequired: a.needs.includes(q.needOptions[1]),
+        storageRequired: a.needs.includes('storage'),
         conditions: a.handling,
       },
-      interests: a.needs,
+      interests: needLabels,
       comments: a.comments || undefined,
+      website: honeypot,
+      startedAt: startedAt.current,
     }
     setSending(true)
     setFailed(null)
@@ -115,7 +127,7 @@ export default function QuotePage() {
           `${q.product} ${a.product}`,
           `${q.quantity}: ${a.quantity}`,
           `${q.origin}: ${a.origin}`,
-          a.needs.length ? `${q.needs}: ${a.needs.join(', ')}` : '',
+          needLabels.length ? `${q.needs}: ${needLabels.join(', ')}` : '',
           a.comments,
           `${a.email} ${phone}`.trim(),
         ]
@@ -240,8 +252,8 @@ export default function QuotePage() {
                     <fieldset>
                       <legend className={labelCls}>{q.needs}</legend>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {q.needOptions.map((o) => (
-                          <Chip key={o} on={a.needs.includes(o)} onClick={() => toggle('needs', o)}>{o}</Chip>
+                        {(Object.keys(q.needOptions) as NeedKey[]).map((k) => (
+                          <Chip key={k} on={a.needs.includes(k)} onClick={() => toggleNeed(k)}>{q.needOptions[k]}</Chip>
                         ))}
                       </div>
                     </fieldset>
@@ -259,7 +271,7 @@ export default function QuotePage() {
                       </legend>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {(Object.keys(q.handlingOptions) as (keyof typeof q.handlingOptions)[]).map((k) => (
-                          <Chip key={k} on={a.handling.includes(k)} onClick={() => toggle('handling', k)}>{q.handlingOptions[k]}</Chip>
+                          <Chip key={k} on={a.handling.includes(k)} onClick={() => toggleHandling(k)}>{q.handlingOptions[k]}</Chip>
                         ))}
                       </div>
                     </fieldset>
@@ -273,6 +285,9 @@ export default function QuotePage() {
                         className="mt-1.5 block w-full px-3.5 py-3 rounded-md border border-dasza-line placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan"
                       />
                     </label>
+
+                    {/* Honeypot — hidden from people, filled by bots */}
+                    <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden />
 
                     {failed && (
                       <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">

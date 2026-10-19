@@ -388,7 +388,7 @@ export const en = {
     hsCode: 'HS code (fracción arancelaria)',
     optional: 'optional',
     needs: 'Services you need',
-    needOptions: ['IMMEX / Customs', 'Warehousing', 'Transportation', 'Last mile', 'Value-added'],
+    needOptions: { customs: 'IMMEX / Customs', storage: 'Warehousing', transport: 'Transportation', lastMile: 'Last mile', valueAdded: 'Value-added' },
     frequency: 'How often?',
     frequencies: ['One time', 'Weekly', 'Monthly', 'Not sure yet'],
     handling: 'Special handling',
