@@ -7,8 +7,10 @@ import { useI18n } from '@/i18n/I18nProvider'
 
 // Scroll distance per step while pinned on desktop: one mouse-wheel notch (100px) moves one step.
 const STEP_PX = 100
-// On touch screens a swipe travels further, so each step gets more than half a screen.
-const STEP_SVH = 60
+// On touch screens a swipe travels further, so each step gets a bit less than half a screen.
+const STEP_SVH = 40
+// Header height the pinned section sits under (h-16 on phones, 72px from md up).
+const headerPx = (mode: Mode) => (mode === 'touch' && typeof window !== 'undefined' && window.innerWidth < 768 ? 64 : 72)
 
 type Mode = 'desktop' | 'touch' | 'static'
 
@@ -38,7 +40,7 @@ export default function ProcessSteps() {
     return () => mq.removeEventListener('change', update)
   }, [reduce])
 
-  const { scrollYProgress } = useScroll({ target: outer, offset: ['start start', 'end end'] })
+  const { scrollYProgress } = useScroll({ target: outer, offset: [`start ${headerPx(mode)}px`, 'end end'] })
   const progress = useSpring(scrollYProgress, { stiffness: 160, damping: 30 })
 
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
@@ -51,7 +53,7 @@ export default function ProcessSteps() {
     setStep(i)
     const el = outer.current
     if (!el) return
-    const start = el.getBoundingClientRect().top + window.scrollY
+    const start = el.getBoundingClientRect().top + window.scrollY - headerPx(mode)
     window.scrollTo({ top: start + i * STEP_PX + STEP_PX / 2, behavior: 'smooth' })
   }
 
@@ -109,8 +111,8 @@ export default function ProcessSteps() {
 
   if (mode === 'touch') {
     return (
-      <div ref={outer} className="relative" style={{ height: `calc(100svh + ${N * STEP_SVH}svh)` }}>
-        <div className="sticky top-(--nav-offset) h-[calc(100svh-var(--nav-offset))] transition-[top,height] duration-300 ease-out motion-reduce:transition-none">
+      <div ref={outer} className="relative" style={{ height: `calc(100svh - ${headerPx(mode)}px + ${N * STEP_SVH}svh)` }}>
+        <div className="sticky top-16 md:top-[72px] h-[calc(100svh-4rem)] md:h-[calc(100svh-72px)]">
           <div className="mx-auto h-full max-w-3xl px-5 sm:px-8 pt-6 pb-5 flex flex-col">
             {intro(true)}
 
@@ -154,8 +156,8 @@ export default function ProcessSteps() {
   }
 
   return (
-    <div ref={outer} className="relative" style={{ height: `calc(100vh + ${N * STEP_PX}px)` }}>
-      <div className="sticky top-(--nav-offset) transition-[top] duration-300 ease-out motion-reduce:transition-none h-[calc(100vh-72px)] flex flex-col justify-center">
+    <div ref={outer} className="relative" style={{ height: `calc(100vh - 72px + ${N * STEP_PX}px)` }}>
+      <div className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col justify-center">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
           <div className="mb-8 [@media(max-height:800px)]:mb-6">{intro(true)}</div>
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
