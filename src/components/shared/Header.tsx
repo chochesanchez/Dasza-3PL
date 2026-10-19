@@ -93,7 +93,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:block"><LanguageSwitch /></div>
+          <LanguageSwitch />
           <Link
             href={href('/quote')}
             className="hidden sm:inline-flex items-center h-10 px-5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold text-[15px] hover:bg-dasza-cyan600 transition-colors"
@@ -121,12 +121,10 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
-          <div className="mt-5 flex items-center justify-between gap-4">
-            <LanguageSwitch up />
-            <Link href={href('/quote')} onClick={() => setOpen(false)} className="flex-1 inline-flex justify-center items-center h-12 rounded-md bg-dasza-cyan text-dasza-ink font-semibold">
-              {t.nav.quote}
-            </Link>
-          </div>
+          {/* From sm up the bar already shows "Get a quote" */}
+          <Link href={href('/quote')} onClick={() => setOpen(false)} className="sm:hidden mt-5 flex w-full justify-center items-center h-12 rounded-md bg-dasza-cyan text-dasza-ink font-semibold">
+            {t.nav.quote}
+          </Link>
         </nav>
       </div>
     </header>
