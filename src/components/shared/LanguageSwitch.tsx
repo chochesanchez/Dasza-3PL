@@ -15,6 +15,7 @@ export default function LanguageSwitch({ tone = 'light', up = false }: { tone?: 
   const path = basePath(usePathname() || '/')
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement | null>(null)
+  const button = useRef<HTMLButtonElement | null>(null)
   const menuId = useId()
 
   useEffect(() => {
@@ -22,7 +23,12 @@ export default function LanguageSwitch({ tone = 'light', up = false }: { tone?: 
     const onDown = (e: PointerEvent) => {
       if (!root.current?.contains(e.target as Node)) setOpen(false)
     }
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        button.current?.focus()
+      }
+    }
     document.addEventListener('pointerdown', onDown)
     document.addEventListener('keydown', onKey)
     return () => {
@@ -35,9 +41,9 @@ export default function LanguageSwitch({ tone = 'light', up = false }: { tone?: 
   return (
     <div ref={root} className="relative">
       <button
+        ref={button}
         type="button"
         aria-label={`${t.nav.language}: ${NAMES[lang]}`}
-        aria-haspopup="true"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((v) => !v)}

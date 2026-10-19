@@ -51,7 +51,6 @@ export default function MultiSelect({
       <button
         ref={button}
         type="button"
-        aria-haspopup="true"
         aria-expanded={open}
         aria-controls={listId}
         aria-labelledby={`${listId}-label ${listId}-value`}
