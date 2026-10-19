@@ -4,8 +4,9 @@ import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
 import PageIntro from '@/components/ui/PageIntro'
 import ContactForm from '@/components/ui/ContactForm'
-import { isLang, localePath, alternatesFor } from '@/i18n/config'
+import { isLang, localePath } from '@/i18n/config'
 import { getDictionary } from '@/i18n/dictionaries'
+import { pageMetadata } from '@/lib/metadata'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params
   if (!isLang(lang)) return {}
   const t = getDictionary(lang)
-  return { title: t.nav.contact, description: t.contactPage.description, alternates: alternatesFor(lang, '/contact') }
+  return pageMetadata(lang, '/contact', { title: t.nav.contact, description: t.contactPage.description })
 }
 
 export default async function ContactPage({ params }: Props) {

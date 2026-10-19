@@ -4,8 +4,9 @@ import { ArrowUpRightIcon } from '@heroicons/react/24/outline'
 import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
 import PageIntro from '@/components/ui/PageIntro'
-import { isLang, localePath, alternatesFor } from '@/i18n/config'
+import { isLang, localePath } from '@/i18n/config'
 import { getDictionary } from '@/i18n/dictionaries'
+import { pageMetadata } from '@/lib/metadata'
 
 const LINKS = ['https://www.sat.gob.mx/', 'https://ustr.gov/', 'https://www.cbp.gov/']
 type Props = { params: Promise<{ lang: string }> }
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params
   if (!isLang(lang)) return {}
   const t = getDictionary(lang)
-  return { title: t.news.title, description: t.news.description, alternates: alternatesFor(lang, '/news') }
+  return pageMetadata(lang, '/news', { title: t.news.title, description: t.news.description })
 }
 
 export default async function NewsPage({ params }: Props) {

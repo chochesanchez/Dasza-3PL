@@ -1,9 +1,19 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
 import TextButton from '@/components/ui/TextButton'
 import { isLang, localePath } from '@/i18n/config'
 import { getDictionary } from '@/i18n/dictionaries'
+import { pageMetadata } from '@/lib/metadata'
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params
+  if (!isLang(lang)) return {}
+  // Only reached after sending the quote form; keep it out of search results.
+  const t = getDictionary(lang)
+  return { ...pageMetadata(lang, '/quote/thank-you', { title: t.thanks.title, description: t.thanks.text }), robots: { index: false, follow: true } }
+}
 
 export default async function ThankYouPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
