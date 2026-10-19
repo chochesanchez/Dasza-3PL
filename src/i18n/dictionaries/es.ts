@@ -390,7 +390,7 @@ export const es: Dict = {
     hsCode: 'Fracción arancelaria',
     optional: 'opcional',
     needs: 'Servicios que necesitas',
-    needOptions: ['IMMEX / Aduanas', 'Almacenaje', 'Transporte', 'Última milla', 'Valor agregado'],
+    needOptions: { customs: 'IMMEX / Aduanas', storage: 'Almacenaje', transport: 'Transporte', lastMile: 'Última milla', valueAdded: 'Valor agregado' },
     frequency: '¿Con qué frecuencia?',
     frequencies: ['Una sola vez', 'Semanal', 'Mensual', 'Aún no lo sé'],
     handling: 'Manejo especial',
