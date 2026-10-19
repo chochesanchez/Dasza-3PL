@@ -3,7 +3,8 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 import { useEffect, useRef, useState } from 'react'
 import { PauseIcon, PlayIcon } from '@heroicons/react/24/solid'
 
-type Sources = { mp4: string; webm: string }
+// AV1 is the smallest; browsers without it fall back to VP9 (webm), then H.264 (mp4).
+type Sources = { av1: string; webm: string; mp4: string }
 
 // Full-screen looping video that stays pinned under the header while the page content
 // (rendered after this component, with a higher z-index) slides up over it.
@@ -28,6 +29,8 @@ export default function VideoHero({
   const frame = useRef<HTMLDivElement | null>(null)
   const reduce = useReducedMotion()
   const [playing, setPlaying] = useState(false)
+  // The video starts downloading only after the page has loaded; the poster covers the wait.
+  const [ready, setReady] = useState(false)
   // Set once the visitor uses the pause button; scrolling then never restarts the video.
   const stopped = useRef(false)
 
@@ -35,6 +38,17 @@ export default function VideoHero({
   const { scrollY } = useScroll()
   const opacity = useTransform(scrollY, [0, 420], [1, 0])
   const y = useTransform(scrollY, [0, 420], [0, -60])
+
+  useEffect(() => {
+    if (reduce) return
+    const start = () => {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(() => setReady(true), { timeout: 2000 })
+      else setTimeout(() => setReady(true), 200)
+    }
+    if (document.readyState === 'complete') return start()
+    window.addEventListener('load', start, { once: true })
+    return () => window.removeEventListener('load', start)
+  }, [reduce])
 
   // Playback starts here (not via autoPlay) so reduced-motion visitors never see it move.
   // Reduced motion: keep the poster frame. Otherwise play, and pause once the video is fully covered.
@@ -45,6 +59,7 @@ export default function VideoHero({
       v.pause()
       return
     }
+    if (!ready) return
     const onScroll = () => {
       if (stopped.current) return
       const covered = window.scrollY > (frame.current?.offsetHeight ?? window.innerHeight) * 1.1
@@ -54,7 +69,7 @@ export default function VideoHero({
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [reduce])
+  }, [reduce, ready])
 
   // WCAG 2.2.2: anything that moves for more than five seconds needs a way to stop it.
   const toggle = () => {
@@ -77,15 +92,17 @@ export default function VideoHero({
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         poster={poster}
         aria-label={label}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
       >
-        <source src={mobile.webm} type="video/webm" media="(max-width: 767px)" />
+        <source src={mobile.av1} type='video/mp4; codecs="av01.0.05M.08"' media="(max-width: 767px)" />
+        <source src={mobile.webm} type='video/webm; codecs="vp9"' media="(max-width: 767px)" />
         <source src={mobile.mp4} type="video/mp4" media="(max-width: 767px)" />
-        <source src={desktop.webm} type="video/webm" />
+        <source src={desktop.av1} type='video/mp4; codecs="av01.0.08M.08"' />
+        <source src={desktop.webm} type='video/webm; codecs="vp9"' />
         <source src={desktop.mp4} type="video/mp4" />
       </video>
       {/* Light tint; the bottom gradient keeps the headline readable while the ship stays visible */}

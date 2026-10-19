@@ -30,8 +30,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <main className="flex-1">
         {/* Hero: looping sea video pinned under the header */}
         <VideoHero
-          desktop={{ mp4: '/videos/dasza-ship-1080.mp4', webm: '/videos/dasza-ship-1080.webm' }}
-          mobile={{ mp4: '/videos/dasza-ship-720.mp4', webm: '/videos/dasza-ship-720.webm' }}
+          desktop={{ av1: '/videos/dasza-ship-1080-av1.mp4', webm: '/videos/dasza-ship-1080.webm', mp4: '/videos/dasza-ship-1080.mp4' }}
+          mobile={{ av1: '/videos/dasza-ship-720-av1.mp4', webm: '/videos/dasza-ship-720.webm', mp4: '/videos/dasza-ship-720.mp4' }}
           poster="/videos/dasza-ship-poster.jpg"
           label={t.home.videoLabel}
           pauseLabel={t.common.pauseVideo}
