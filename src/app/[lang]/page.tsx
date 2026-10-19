@@ -80,7 +80,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </section>
 
         {/* How it works */}
-        <section id="how-it-works" className="scroll-mt-16 pt-20 pb-20 md:pt-28 md:pb-24 lg:pt-24 lg:pb-8">
+        <section id="how-it-works" className="scroll-mt-16 pt-16 pb-16 md:pt-24 md:pb-20 lg:pt-32 lg:pb-8">
           <ProcessSteps />
         </section>
 

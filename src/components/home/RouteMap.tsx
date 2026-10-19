@@ -57,9 +57,9 @@ export default function RouteMap() {
         <title id="route-map-title">{t.map.title}</title>
         <path d={USA_PATH} fill="#243140" opacity="0.55" />
         <path d={MEXICO_PATH} fill="#2A3A4B" stroke="#4A5F75" strokeWidth="1.2" strokeLinejoin="round" />
-        <text x="560" y="70" fill="#7D8EA0" fontSize="14" letterSpacing="2" className="map-label">{t.map.usa}</text>
+        <text x="470" y="78" fill="#7D8EA0" fontSize="14" letterSpacing="2" className="map-label">{t.map.usa}</text>
         <text x="300" y="604" fill="#5F7184" fontSize="13" className="map-label map-label-minor">{t.map.pacific}</text>
-        <text x="745" y="300" fill="#5F7184" fontSize="13" className="map-label map-label-minor">{t.map.gulf}</text>
+        <text x="735" y="252" fill="#5F7184" fontSize="13" className="map-label map-label-minor">{t.map.gulf}</text>
         <text x={asia.x + 4} y={asia.y - 14} fill="#C9D3DC" fontSize="15" fontWeight="700" letterSpacing="1" className="map-label">{t.map.asia}</text>
         <text x={europe.x - 4} y={europe.y - 14} textAnchor="end" fill="#C9D3DC" fontSize="15" fontWeight="700" letterSpacing="1" className="map-label">{t.map.europe}</text>
 

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Modal from '@/components/ui/Modal'
+import PhoneCountrySelect from '@/components/ui/PhoneCountrySelect'
 import MultiSelect from '@/components/ui/MultiSelect'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { PHONE_COUNTRIES, WHATSAPP_NUMBER } from '@/lib/phoneCountries'
@@ -89,11 +90,7 @@ export default function ContactForm() {
           <div className="text-sm font-medium text-dasza-ink">
             <label htmlFor="contact-phone">{f.phone}*</label>
             <div className="mt-1.5 flex gap-2">
-              <select name="phoneCountry" aria-label={f.countryCode} defaultValue="MX" className="h-12 border border-dasza-line rounded-md px-2 bg-white focus:outline-none focus:ring-2 focus:ring-dasza-cyan">
-                {PHONE_COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.code}>{c.code === 'OTHER' ? f.other : `${c.code} ${c.dial}`}</option>
-                ))}
-              </select>
+              <PhoneCountrySelect name="phoneCountry" defaultValue="MX" label={f.countryCode} otherLabel={f.other} />
               <input
                 id="contact-phone"
                 name="phone"

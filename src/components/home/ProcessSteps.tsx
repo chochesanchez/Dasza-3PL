@@ -5,13 +5,16 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { PROCESS_IMAGES } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
 
-const HEADER = 72
-// Scroll distance per step while pinned: one mouse-wheel notch (100px) moves one step.
+// Scroll distance per step while pinned on desktop: one mouse-wheel notch (100px) moves one step.
 const STEP_PX = 100
+// On touch screens a swipe travels further, so each step gets more than half a screen.
+const STEP_SVH = 60
 
-// Desktop: the section pins while you scroll; every STEP_PX of normal scrolling advances one step.
-// Scrolling is never intercepted. Tapping a step scrolls to it.
-// Phones / reduced motion: every step open, each with its photo below the text. Nothing to tap.
+type Mode = 'desktop' | 'touch' | 'static'
+
+// Desktop and phones: the section pins while you scroll, and the scroll position picks the step.
+// Scrolling is never intercepted. On desktop tapping a step scrolls to it.
+// Reduced motion: every step open, each with its photo below the text.
 export default function ProcessSteps() {
   const { t } = useI18n()
   const steps = t.process
@@ -19,7 +22,7 @@ export default function ProcessSteps() {
   const outer = useRef<HTMLDivElement | null>(null)
   const [active, setActive] = useState(0)
   const activeRef = useRef(0)
-  const [pinned, setPinned] = useState(false)
+  const [mode, setMode] = useState<Mode>('static')
   const reduce = useReducedMotion()
 
   const setStep = useCallback((i: number) => {
@@ -29,43 +32,64 @@ export default function ProcessSteps() {
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')
-    const update = () => setPinned(mq.matches && !reduce)
+    const update = () => setMode(reduce ? 'static' : mq.matches ? 'desktop' : 'touch')
     update()
     mq.addEventListener('change', update)
     return () => mq.removeEventListener('change', update)
   }, [reduce])
 
-  const { scrollYProgress } = useScroll({ target: outer, offset: [`start ${HEADER}px`, 'end end'] })
+  const { scrollYProgress } = useScroll({ target: outer, offset: ['start start', 'end end'] })
   const progress = useSpring(scrollYProgress, { stiffness: 160, damping: 30 })
 
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
-    if (!pinned) return
+    if (mode === 'static') return
     const i = Math.min(N - 1, Math.max(0, Math.floor(p * N)))
     if (i !== activeRef.current) setStep(i)
   })
 
-  const scrollToStep = useCallback((i: number) => {
-    const el = outer.current
-    if (!el) return
-    const pinStart = el.getBoundingClientRect().top + window.scrollY - HEADER
-    window.scrollTo({ top: pinStart + i * STEP_PX + STEP_PX / 2, behavior: 'smooth' })
-  }, [])
-
   const goTo = (i: number) => {
     setStep(i)
-    scrollToStep(i)
+    const el = outer.current
+    if (!el) return
+    const start = el.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top: start + i * STEP_PX + STEP_PX / 2, behavior: 'smooth' })
   }
 
   const step = steps[active]
 
-  if (!pinned) {
-    // Keeps `outer` attached: useScroll needs its target mounted in both layouts.
+  // While pinned, very short screens drop the lead paragraph so the steps and photo still fit.
+  const intro = (pinned: boolean) => (
+    <div className="max-w-2xl">
+      <p className="flex items-center gap-3 text-xs sm:text-sm font-semibold uppercase tracking-[0.14em] text-dasza-cyan600">
+        <span className="h-px w-8 bg-dasza-cyan" aria-hidden />
+        {t.nav.how}
+      </p>
+      <h2 className="mt-3 lg:mt-4 font-display text-[28px] sm:text-4xl lg:text-5xl lg:[@media(max-height:800px)]:text-4xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>
+      <p className={`mt-3 lg:mt-4 text-base lg:text-lg lg:[@media(max-height:800px)]:text-base text-dasza-navy leading-relaxed ${pinned ? '[@media(max-height:700px)]:hidden' : ''}`}>
+        {t.home.howText}
+      </p>
+    </div>
+  )
+
+  // Photo stack: the active step's photo fades in, the others stay mounted so switching is instant.
+  const photos = (sizes: string) =>
+    PROCESS_IMAGES.map((src, i) => (
+      <motion.div
+        key={src}
+        className="absolute inset-0"
+        initial={false}
+        animate={{ opacity: i === active ? 1 : 0, scale: i === active ? 1 : 1.05 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <Image src={src} alt="" fill sizes={sizes} className="object-cover" />
+      </motion.div>
+    ))
+
+  if (mode === 'static') {
+    // Keeps `outer` attached: useScroll needs its target mounted in every layout.
     return (
       <div ref={outer} className="mx-auto w-full max-w-7xl px-5 sm:px-8">
-        <div className="max-w-2xl mb-8">
-          <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>
-          <p className="mt-4 text-lg text-dasza-navy leading-relaxed">{t.home.howText}</p>
-        </div>
+        <div className="mb-8">{intro(false)}</div>
         <ol className="space-y-10 sm:grid sm:grid-cols-2 sm:gap-x-8 sm:gap-y-12 sm:space-y-0">
           {steps.map((s, i) => (
             <li key={s.title} className="border-t border-dasza-line pt-5">
@@ -83,14 +107,57 @@ export default function ProcessSteps() {
     )
   }
 
+  if (mode === 'touch') {
+    return (
+      <div ref={outer} className="relative" style={{ height: `calc(100svh + ${N * STEP_SVH}svh)` }}>
+        <div className="sticky top-(--nav-offset) h-[calc(100svh-var(--nav-offset))] transition-[top,height] duration-300 ease-out motion-reduce:transition-none">
+          <div className="mx-auto h-full max-w-3xl px-5 sm:px-8 pt-6 pb-5 flex flex-col">
+            {intro(true)}
+
+            {/* Scroll length: fills as you move through the steps */}
+            <div className="mt-5 flex items-center gap-3" aria-hidden>
+              <span className="font-display text-sm tabular-nums text-dasza-navy">
+                <span className="text-dasza-cyan600">{String(active + 1).padStart(2, '0')}</span> / {String(N).padStart(2, '0')}
+              </span>
+              <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-dasza-line">
+                <motion.div className="absolute inset-0 origin-left bg-dasza-cyan" style={{ scaleX: progress }} />
+                {steps.slice(1).map((_, i) => (
+                  <span key={i} className="absolute inset-y-0 w-0.5 bg-white" style={{ left: `${((i + 1) / N) * 100}%` }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Every step is stacked in one cell, so the block keeps the height of the longest one */}
+            <ol className="mt-4 grid">
+              {steps.map((s, i) => (
+                <li
+                  key={s.title}
+                  aria-current={i === active ? 'step' : undefined}
+                  className={`col-start-1 row-start-1 transition-[opacity,translate] duration-300 ${
+                    i === active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+                  }`}
+                >
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-dasza-ink">{s.title}</h3>
+                  <p className="mt-1.5 text-[15px] sm:text-base text-dasza-navy leading-relaxed">{s.text}</p>
+                </li>
+              ))}
+            </ol>
+
+            <div className="relative mt-4 flex-1 min-h-[160px] overflow-hidden rounded-lg bg-dasza-paper">
+              {photos('(min-width: 768px) 768px, 100vw')}
+              <span className="absolute left-3 bottom-3 px-3 py-1.5 rounded bg-dasza-ink/85 text-white text-sm">{step.place}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div ref={outer} className="relative" style={{ height: `calc(100vh - ${HEADER}px + ${N * STEP_PX}px)` }}>
+    <div ref={outer} className="relative" style={{ height: `calc(100vh + ${N * STEP_PX}px)` }}>
       <div className="sticky top-(--nav-offset) transition-[top] duration-300 ease-out motion-reduce:transition-none h-[calc(100vh-72px)] flex flex-col justify-center">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
-          <div className="max-w-2xl mb-8 lg:mb-10">
-            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>
-            <p className="mt-4 text-lg text-dasza-navy leading-relaxed">{t.home.howText}</p>
-          </div>
+          <div className="mb-8 [@media(max-height:800px)]:mb-6">{intro(true)}</div>
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             <div className="lg:col-span-5 relative">
               <div className="absolute -left-4 top-0 bottom-0 w-[3px] bg-dasza-line rounded-full overflow-hidden" aria-hidden>
@@ -105,13 +172,13 @@ export default function ProcessSteps() {
                         type="button"
                         onClick={() => goTo(i)}
                         aria-current={on ? 'step' : undefined}
-                        className="w-full text-left py-4 xl:py-5 grid grid-cols-[2.5rem_1fr] gap-x-3 group"
+                        className="w-full text-left py-4 xl:py-5 [@media(max-height:800px)]:py-3 grid grid-cols-[2.5rem_1fr] gap-x-3 group"
                       >
                         <span className={`font-display text-lg tabular-nums transition-colors ${on ? 'text-dasza-cyan600' : 'text-dasza-gray'}`}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         <span>
-                          <span className={`block font-display text-xl md:text-2xl font-semibold transition-colors ${on ? 'text-dasza-ink' : 'text-dasza-navy/60 group-hover:text-dasza-ink'}`}>
+                          <span className={`block font-display text-xl md:text-2xl [@media(max-height:800px)]:text-xl font-semibold transition-colors ${on ? 'text-dasza-ink' : 'text-dasza-navy/60 group-hover:text-dasza-ink'}`}>
                             {s.title}
                           </span>
                           <span className={`grid transition-[grid-template-rows,opacity] duration-300 ${on ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
@@ -128,18 +195,8 @@ export default function ProcessSteps() {
             </div>
 
             <div className="lg:col-span-7">
-              <div className="relative h-[52vh] overflow-hidden rounded-lg bg-dasza-paper">
-                {PROCESS_IMAGES.map((src, i) => (
-                  <motion.div
-                    key={src}
-                    className="absolute inset-0"
-                    initial={false}
-                    animate={{ opacity: i === active ? 1 : 0, scale: i === active ? 1 : 1.05 }}
-                    transition={{ duration: reduce ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <Image src={src} alt="" fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
-                  </motion.div>
-                ))}
+              <div className="relative h-[52vh] [@media(max-height:800px)]:h-[46vh] overflow-hidden rounded-lg bg-dasza-paper">
+                {photos('(min-width: 1024px) 55vw, 100vw')}
                 <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-4 bg-gradient-to-t from-dasza-ink/70 to-transparent">
                   <span className="px-3 py-1.5 rounded bg-dasza-ink/85 text-white text-sm">{step.place}</span>
                   <span className="flex gap-1.5" aria-hidden>

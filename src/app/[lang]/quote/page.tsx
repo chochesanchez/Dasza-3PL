@@ -5,6 +5,7 @@ import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
 import PageIntro from '@/components/ui/PageIntro'
 import Modal from '@/components/ui/Modal'
+import PhoneCountrySelect from '@/components/ui/PhoneCountrySelect'
 import { PHONE_COUNTRIES, WHATSAPP_NUMBER } from '@/lib/phoneCountries'
 import { COMPANY } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -193,16 +194,7 @@ export default function QuotePage() {
                     <div className={labelCls}>
                       <label htmlFor="quote-phone">{q.phone}*</label>
                       <div className="mt-1.5 flex gap-2">
-                        <select
-                          aria-label={t.form.countryCode}
-                          value={a.phoneCountry}
-                          onChange={(e) => set('phoneCountry', e.target.value)}
-                          className="h-12 border border-dasza-line rounded-md px-2 bg-white focus:outline-none focus:ring-2 focus:ring-dasza-cyan"
-                        >
-                          {PHONE_COUNTRIES.map((c) => (
-                            <option key={c.code} value={c.code}>{c.code === 'OTHER' ? t.form.other : `${c.code} ${c.dial}`}</option>
-                          ))}
-                        </select>
+                        <PhoneCountrySelect label={t.form.countryCode} otherLabel={t.form.other} value={a.phoneCountry} onChange={(e) => set('phoneCountry', e.target.value)} />
                         <input
                           id="quote-phone"
                           type="tel"
