@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import MultiSelect from '@/components/ui/MultiSelect'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
@@ -19,6 +19,10 @@ export default function ContactForm() {
   const [ok, setOk] = useState(false)
   const [failedMessage, setFailedMessage] = useState<string | null>(null)
   const [selected, setSelected] = useState<string[]>([])
+  const startedAt = useRef(0)
+  useEffect(() => {
+    startedAt.current = Date.now()
+  }, [])
   const toggle = (opt: string) => setSelected((s) => (s.includes(opt) ? s.filter((x) => x !== opt) : [...s, opt]))
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -36,6 +40,8 @@ export default function ContactForm() {
       contact: { name, email, phone, company, phoneCountry: country.label },
       interests: selected,
       comments: message || undefined,
+      website: String(fd.get('website') || ''),
+      startedAt: startedAt.current,
     }
 
     setLoading(true)

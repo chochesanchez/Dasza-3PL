@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { MATERIALS } from '@/components/dasza-system/demoData'
+import { leadRecipients } from '@/lib/mail'
+import { checkSubmission, clientIp, createRateLimit } from '@/lib/spam'
 
 // Lead capture for the Dasza System interactive demo (/dasza-system).
 // Sends one notification email; never blocks the visitor from seeing the demo.
@@ -16,28 +18,18 @@ const leadSchema = z.object({
   materials: z.array(z.enum(materialIds)).max(materialIds.length).default([]),
   otherMaterial: z.string().trim().max(200).optional().default(''),
   palletsPerMonth: z.string().trim().max(40).optional().default(''),
-  website: z.string().optional(), // honeypot
+  website: z.string().optional(), // honeypot, see checkSubmission()
+  startedAt: z.number().optional(),
 })
 
-const hits = new Map<string, { count: number; ts: number }>()
-function rateLimit(ip: string, limit = 5, windowMs = 60_000) {
-  const now = Date.now()
-  const rec = hits.get(ip)
-  if (!rec || now - rec.ts > windowMs) {
-    hits.set(ip, { count: 1, ts: now })
-    return true
-  }
-  rec.count += 1
-  return rec.count <= limit
-}
+const rateLimit = createRateLimit(5)
 
 function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string)
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-  if (!rateLimit(ip)) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  if (!rateLimit(clientIp(req.headers))) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
 
   let body: unknown
   try {
@@ -46,12 +38,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
+  // Bots get a quiet success so they don't retry.
+  const check = checkSubmission(body)
+  if (check === 'bot') return NextResponse.json({ ok: true })
+  if (check === 'invalid') return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
+
   const parsed = leadSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
   const lead = parsed.data
-
-  // Bots fill the hidden field; pretend success so they don't retry.
-  if (lead.website) return NextResponse.json({ ok: true })
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
@@ -82,7 +76,7 @@ export async function POST(req: NextRequest) {
 
   const resend = new Resend(apiKey)
   const fromAddress = process.env.RESEND_FROM || 'forms@dasza.com'
-  const to = (process.env.DEMO_LEADS_TO || 'jmsanchez@dasza.com').split(',').map((s) => s.trim()).filter(Boolean)
+  const to = leadRecipients(process.env.DEMO_LEADS_TO || process.env.LEADS_TO)
   const { error } = await resend.emails.send({
     from: `Dasza 3PL <${fromAddress}>`,
     to,

@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CheckIcon } from '@heroicons/react/24/solid'
 import { MATERIALS, type MaterialId } from './demoData'
 import { useI18n } from '@/i18n/I18nProvider'
@@ -35,6 +35,10 @@ export default function Onboarding({ onComplete }: Props) {
     palletsPerMonth: '',
   })
   const [honeypot, setHoneypot] = useState('')
+  const startedAt = useRef(0)
+  useEffect(() => {
+    startedAt.current = Date.now()
+  }, [])
 
   const set = <K extends keyof Visitor>(k: K, val: Visitor[K]) => setV((p) => ({ ...p, [k]: val }))
   const toggleMaterial = (id: MaterialId) =>
@@ -58,7 +62,7 @@ export default function Onboarding({ onComplete }: Props) {
       const res = await fetch('/api/demo-lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...v, website: honeypot }),
+        body: JSON.stringify({ ...v, website: honeypot, startedAt: startedAt.current }),
       })
       if (!res.ok) console.warn('Demo lead was not delivered', res.status)
     } catch (err) {

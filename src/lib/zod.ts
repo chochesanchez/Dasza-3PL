@@ -5,14 +5,13 @@ const text = z.string().trim().max(5000).nullish()
 
 export const quoteSchema = z.object({
   contact: z.object({
-    name: text,
+    name: z.string().trim().min(2).max(200),
     email: z.email().max(200),
     phone: text,
     company: text,
     address: text,
     title: text,
     postalCode: text,
-    website: text,
     phoneCountry: text,
     location: text,
   }),
@@ -21,8 +20,6 @@ export const quoteSchema = z.object({
     quantity: z.coerce.number().nullish(),
     volume: text,
     weight: text,
-    photoUrl: text,
-    photos: z.array(z.object({ name: z.string(), type: z.string().optional(), size: z.number().optional() })).nullish(),
   }).partial().optional(),
   trade: z.object({
     hsCode: text,
@@ -45,5 +42,7 @@ export const quoteSchema = z.object({
   }).partial().optional(),
   interests: z.array(z.string().max(200)).max(50).optional(),
   comments: text,
-  captchaToken: z.string().optional(),
+  // Read by checkSubmission() in src/lib/spam.ts before parsing.
+  website: z.string().optional(),
+  startedAt: z.number().optional(),
 })
