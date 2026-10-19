@@ -2,7 +2,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useI18n } from '@/i18n/I18nProvider'
 import { basePath } from '@/i18n/config'
@@ -14,9 +15,10 @@ export default function Header() {
   const current = basePath(pathname)
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
-  const openRef = useRef(false)
-  openRef.current = open
+  // Home opens full screen on the video: the header fades in as you scroll and fades out back at the top.
+  const overlay = current === '/'
+  const [faded, setFaded] = useState(overlay)
+  const [focused, setFocused] = useState(false)
 
   const NAV = [
     { path: '/services', label: t.nav.services },
@@ -26,27 +28,17 @@ export default function Header() {
     { path: '/contact', label: t.nav.contact },
   ]
 
-  // Hide while scrolling down, show again on any scroll up. Always shown near the top and while the menu is open.
-  useEffect(() => {
-    let lastY = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      setScrolled(y > 8)
-      const delta = y - lastY
-      if (y < 120 || openRef.current) setHidden(false)
-      else if (delta > 6) setHidden(true)
-      else if (delta < -6) setHidden(false)
-      if (Math.abs(delta) > 6 || y < 120) lastY = y
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const { scrollY } = useScroll()
+  const fade = useTransform(scrollY, [80, 280], [0, 1])
+  const drift = useTransform(scrollY, [80, 280], [-12, 0])
+  useMotionValueEvent(scrollY, 'change', (y) => {
+    setScrolled(y > 8)
+    setFaded(overlay && y < 100)
+  })
+  useEffect(() => setFaded(overlay && window.scrollY < 100), [overlay])
 
-  // Pinned sections read --nav-offset (globals.css) so they move up with the header.
-  useEffect(() => {
-    document.documentElement.dataset.nav = hidden ? 'hidden' : 'shown'
-  }, [hidden])
+  // The menu or keyboard focus always shows the header in full.
+  const forced = !overlay || open || focused
 
   useEffect(() => setOpen(false), [pathname])
 
@@ -63,9 +55,11 @@ export default function Header() {
   const isActive = (p: string) => !p.includes('#') && current.startsWith(p)
 
   return (
-    <header
-      onFocusCapture={() => setHidden(false)}
-      className={`sticky top-0 z-50 bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none ${hidden ? '-translate-y-full' : ''} ${
+    <motion.header
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setFocused(false)}
+      style={forced ? undefined : { opacity: fade, y: drift }}
+      className={`${overlay ? 'fixed inset-x-0' : 'sticky'} top-0 z-50 bg-white ${faded && !forced ? 'pointer-events-none' : ''} ${
         scrolled ? 'shadow-[0_1px_0_var(--color-dasza-line)]' : ''
       }`}
     >
@@ -127,6 +121,6 @@ export default function Header() {
           </Link>
         </nav>
       </div>
-    </header>
+    </motion.header>
   )
 }

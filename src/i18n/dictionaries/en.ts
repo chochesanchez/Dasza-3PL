@@ -28,8 +28,6 @@ export const en = {
     home: 'Home',
     services: 'Services',
     breadcrumb: 'Breadcrumb',
-    pauseVideo: 'Pause video',
-    playVideo: 'Play video',
     certifications: 'Certifications',
     close: 'Close',
     sqft: 'sq ft',

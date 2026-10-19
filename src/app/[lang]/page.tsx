@@ -34,8 +34,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           mobile={{ av1: '/videos/dasza-ship-720-av1.mp4', webm: '/videos/dasza-ship-720.webm', mp4: '/videos/dasza-ship-720.mp4' }}
           poster="/videos/dasza-ship-poster.jpg"
           label={t.home.videoLabel}
-          pauseLabel={t.common.pauseVideo}
-          playLabel={t.common.playVideo}
         >
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.08] max-w-2xl">{t.home.heroTitle}</h1>
           <p className="mt-4 text-base md:text-lg text-white/85 leading-relaxed max-w-xl">{t.home.heroText}</p>
@@ -80,7 +78,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </section>
 
         {/* How it works */}
-        <section id="how-it-works" className="scroll-mt-16 pt-16 pb-16 md:pt-24 md:pb-20 lg:pt-32 lg:pb-8">
+        <section id="how-it-works" className="scroll-mt-16 pt-20 pb-20 md:pt-28 md:pb-24 lg:pt-24 lg:pb-8">
           <ProcessSteps />
         </section>
 

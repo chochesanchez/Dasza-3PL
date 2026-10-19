@@ -30,8 +30,6 @@ export const es: Dict = {
     home: 'Inicio',
     services: 'Servicios',
     breadcrumb: 'Ruta de navegación',
-    pauseVideo: 'Pausar video',
-    playVideo: 'Reproducir video',
     certifications: 'Certificaciones',
     close: 'Cerrar',
     sqft: 'ft²',
