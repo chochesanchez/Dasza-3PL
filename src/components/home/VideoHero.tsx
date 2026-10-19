@@ -48,7 +48,7 @@ export default function VideoHero({
   }, [reduce])
 
   return (
-    <div ref={frame} className="sticky top-16 md:top-[72px] z-0 h-[calc(100svh-4rem)] md:h-[calc(100svh-72px)] overflow-hidden bg-dasza-ink">
+    <div ref={frame} className="sticky top-(--nav-offset) transition-[top] duration-300 ease-out motion-reduce:transition-none z-0 h-[calc(100svh-4rem)] md:h-[calc(100svh-72px)] overflow-hidden bg-dasza-ink">
       <video
         ref={video}
         className="absolute inset-0 h-full w-full object-cover"

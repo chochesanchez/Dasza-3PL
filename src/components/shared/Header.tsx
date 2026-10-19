@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useI18n } from '@/i18n/I18nProvider'
 import { basePath } from '@/i18n/config'
@@ -14,6 +14,9 @@ export default function Header() {
   const current = basePath(pathname)
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  const openRef = useRef(false)
+  openRef.current = open
 
   const NAV = [
     { path: '/services', label: t.nav.services },
@@ -23,12 +26,27 @@ export default function Header() {
     { path: '/contact', label: t.nav.contact },
   ]
 
+  // Hide while scrolling down, show again on any scroll up. Always shown near the top and while the menu is open.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 8)
+      const delta = y - lastY
+      if (y < 120 || openRef.current) setHidden(false)
+      else if (delta > 6) setHidden(true)
+      else if (delta < -6) setHidden(false)
+      if (Math.abs(delta) > 6 || y < 120) lastY = y
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Pinned sections read --nav-offset (globals.css) so they move up with the header.
+  useEffect(() => {
+    document.documentElement.dataset.nav = hidden ? 'hidden' : 'shown'
+  }, [hidden])
 
   useEffect(() => setOpen(false), [pathname])
 
@@ -45,7 +63,12 @@ export default function Header() {
   const isActive = (p: string) => !p.includes('#') && current.startsWith(p)
 
   return (
-    <header className={`sticky top-0 z-50 bg-white transition-shadow ${scrolled ? 'shadow-[0_1px_0_var(--color-dasza-line)]' : ''}`}>
+    <header
+      onFocusCapture={() => setHidden(false)}
+      className={`sticky top-0 z-50 bg-white transition-[transform,box-shadow] duration-300 ease-out motion-reduce:transition-none ${hidden ? '-translate-y-full' : ''} ${
+        scrolled ? 'shadow-[0_1px_0_var(--color-dasza-line)]' : ''
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-5 sm:px-8 h-16 md:h-[72px] flex items-center justify-between gap-6">
         <Link href={href('/')} className="flex items-center gap-2.5 shrink-0" aria-label={t.nav.home}>
           <Image src="/images/Dasza Logistics Logo 2.png" alt="" width={30} height={30} priority />
