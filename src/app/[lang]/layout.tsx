@@ -4,9 +4,10 @@ import { Archivo } from 'next/font/google'
 import '../globals.css'
 import Analytics from '@/components/shared/Analytics'
 import { SITE_URL } from '@/lib/site'
-import { LOCALES, isLang, alternatesFor } from '@/i18n/config'
+import { LOCALES, isLang } from '@/i18n/config'
 import { getDictionary } from '@/i18n/dictionaries'
 import { I18nProvider } from '@/i18n/I18nProvider'
+import { pageMetadata } from '@/lib/metadata'
 
 const archivo = Archivo({
   variable: '--font-archivo',
@@ -34,17 +35,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params
   if (!isLang(lang)) return {}
   const t = getDictionary(lang)
+  const home = pageMetadata(lang, '/', { description: t.meta.description })
   return {
+    ...home,
     metadataBase: new URL(SITE_URL),
     title: { default: t.meta.title, template: '%s | Dasza 3PL' },
-    description: t.meta.description,
-    alternates: alternatesFor(lang, '/'),
-    openGraph: {
-      type: 'website',
-      siteName: 'Dasza 3PL',
-      locale: lang === 'es' ? 'es_MX' : 'en_US',
-      images: [{ url: '/images/site/dasza-warehouse.jpg', width: 1920, height: 1080 }],
-    },
+    openGraph: { ...home.openGraph, title: t.meta.title },
     icons: { icon: '/favicon-2025.ico', shortcut: '/favicon-2025.ico', apple: '/favicon-2025-512.png' },
   }
 }

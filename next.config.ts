@@ -25,6 +25,8 @@ function buildSecurityHeaders() {
         "img-src 'self' https: data:",
         `script-src ${scriptSrc.join(' ')}`,
         "style-src 'self' 'unsafe-inline'",
+        // Google Analytics 4 beacons (only loaded when NEXT_PUBLIC_GA_MEASUREMENT_ID is set)
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
         'frame-src https://www.google.com',
       ].join('; '),
     },
@@ -36,6 +38,17 @@ const nextConfig: NextConfig = {
     {
       source: '/:path*',
       headers: buildSecurityHeaders(),
+    },
+    {
+      // Vercel preview and *.vercel.app URLs serve the same pages; keep them out of search results.
+      source: '/:path*',
+      missing: [{ type: 'host', value: '(www\\.)?dasza\\.com' }],
+      headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+    },
+    {
+      // Media file names are not hashed, so cache for a week and revalidate in the background.
+      source: '/:dir(videos|images)/:path*',
+      headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],
     },
   ],
   // Silence incorrect workspace root inference (multiple lockfiles on machine)

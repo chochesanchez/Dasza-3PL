@@ -4,8 +4,9 @@ import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
 import PageIntro from '@/components/ui/PageIntro'
 import DemoExperience from '@/components/dasza-system/DemoExperience'
-import { isLang, localePath, alternatesFor } from '@/i18n/config'
+import { isLang, localePath } from '@/i18n/config'
 import { getDictionary } from '@/i18n/dictionaries'
+import { pageMetadata } from '@/lib/metadata'
 
 type Props = { params: Promise<{ lang: string }> }
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params
   if (!isLang(lang)) return {}
   const t = getDictionary(lang)
-  return { title: t.demo.metaTitle, description: t.demo.metaDescription, alternates: alternatesFor(lang, '/dasza-system') }
+  return pageMetadata(lang, '/dasza-system', { title: t.demo.metaTitle, description: t.demo.metaDescription })
 }
 
 export default async function DaszaSystemPage({ params }: Props) {
