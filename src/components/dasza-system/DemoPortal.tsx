@@ -1,6 +1,5 @@
 'use client'
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
 import {
   ArchiveBoxIcon,
   ArrowDownTrayIcon,
@@ -18,6 +17,7 @@ import { buildDemoData, type DemoData, type LabelStatus } from './demoData'
 import { useI18n } from '@/i18n/I18nProvider'
 import { fmt, type Dict } from '@/i18n/dictionaries'
 import type { Visitor } from './Onboarding'
+import TextButton from '@/components/ui/TextButton'
 
 type SectionId = 'dashboard' | 'inventory' | 'receipts' | 'shipments' | 'labels' | 'aging' | 'cycle' | 'billing' | 'mobile'
 
@@ -433,9 +433,9 @@ export default function DemoPortal({ visitor, onRestart }: { visitor: Visitor; o
           <div className="text-xl font-semibold">{d.ctaTitle}</div>
           <p className="text-white/80 mt-1">{d.ctaText}</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href={href('/quote')} className="inline-flex items-center h-11 px-5 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white">{d.ctaQuote}</Link>
-          <Link href={href('/contact')} className="inline-flex items-center h-11 px-5 rounded-md border border-white/40 text-white font-medium hover:border-white">{d.ctaTalk}</Link>
+        <div className="flex flex-wrap gap-x-8 gap-y-3">
+          <TextButton href={href('/quote')} tone="dark">{d.ctaQuote}</TextButton>
+          <TextButton href={href('/contact')} tone="dark">{d.ctaTalk}</TextButton>
         </div>
       </div>
     </div>

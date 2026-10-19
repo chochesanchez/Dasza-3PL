@@ -54,9 +54,7 @@ export const es: Dict = {
     heroTitle: 'Del puerto a tu línea de producción.',
     heroText:
       'DASZA importa tus materiales bajo nuestro programa IMMEX AAA, los despacha con nuestro propio agente aduanal, los guarda en nuestros almacenes de Apodaca y Querétaro y los entrega en tu planta a tiempo.',
-    seeHow: 'Ver cómo funciona',
     videoLabel: 'Vista aérea cenital de un buque portacontenedores navegando en el mar',
-    scrollHint: 'Desliza',
     mapTitle: 'Las principales entradas a México, conectadas con nuestros almacenes',
     mapText: 'Despachamos carga en Manzanillo, Lázaro Cárdenas, Altamira, Veracruz y Nuevo Laredo, y la llevamos a nuestros almacenes en Apodaca y Querétaro.',
     howTitle: 'Un solo socio del puerto a tu planta',
@@ -288,13 +286,16 @@ export const es: Dict = {
   },
   map: {
     title:
-      'Mapa de México con rutas de carga desde los puertos de Manzanillo, Lázaro Cárdenas, Altamira y Veracruz y la frontera de Nuevo Laredo hacia los almacenes de DASZA en Apodaca y Querétaro.',
+      'Mapa de México con rutas marítimas desde Asia a Manzanillo y Lázaro Cárdenas y desde Europa a Altamira y Veracruz, además de la frontera de Nuevo Laredo, con rutas de carga desde cada uno hacia los almacenes de DASZA en Apodaca y Querétaro.',
     usa: 'EE. UU.',
     pacific: 'Pacífico',
     gulf: 'Golfo de México',
     legendWarehouse: 'Almacén Dasza',
     legendPort: 'Puerto o cruce fronterizo',
     legendFreight: 'Fletes que coordinamos',
+    legendOcean: 'Rutas marítimas desde Asia y Europa',
+    asia: 'Asia',
+    europe: 'Europa',
   },
   preview: {
     header: 'Inventario',
@@ -346,6 +347,8 @@ export const es: Dict = {
     other: 'Otro',
     company: 'Empresa',
     need: '¿Qué necesitas?',
+    needPh: 'Selecciona todas las que apliquen',
+    needCount: '{n} seleccionadas',
     solutions: ['Almacenaje', 'IMMEX / Shelter', 'VMI', 'Aduanas', 'Transporte', 'Última milla', 'Fulfillment', 'Otro'],
     message: 'Mensaje (opcional)',
     messagePh: 'Cuéntanos brevemente sobre tu operación',

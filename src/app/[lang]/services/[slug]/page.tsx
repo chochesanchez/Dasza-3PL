@@ -7,6 +7,7 @@ import PageIntro from '@/components/ui/PageIntro'
 import { SERVICES } from '@/content/site'
 import { LOCALES, isLang, localePath, alternatesFor } from '@/i18n/config'
 import { getDictionary } from '@/i18n/dictionaries'
+import TextButton from '@/components/ui/TextButton'
 
 type Props = { params: Promise<{ lang: string; slug: string }> }
 
@@ -50,13 +51,9 @@ export default async function ServicePage({ params }: Props) {
           ]}
           crumbLabel={t.common.breadcrumb}
         >
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={href('/quote')} className="inline-flex items-center h-12 px-6 rounded-md bg-dasza-cyan text-dasza-ink font-semibold hover:bg-white transition-colors">
-              {t.common.getQuote}
-            </Link>
-            <Link href={href('/contact')} className="inline-flex items-center h-12 px-6 rounded-md border border-white/30 hover:border-white transition-colors">
-              {t.common.talk}
-            </Link>
+          <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+            <TextButton href={href('/quote')} tone="dark">{t.common.getQuote}</TextButton>
+            <TextButton href={href('/contact')} tone="dark">{t.common.talk}</TextButton>
           </div>
         </PageIntro>
 

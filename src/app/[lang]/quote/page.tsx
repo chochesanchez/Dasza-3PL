@@ -9,6 +9,7 @@ import { PHONE_COUNTRIES, WHATSAPP_NUMBER } from '@/lib/phoneCountries'
 import { COMPANY } from '@/content/site'
 import { useI18n } from '@/i18n/I18nProvider'
 import { fmt } from '@/i18n/dictionaries'
+import TextButton from '@/components/ui/TextButton'
 
 const inputCls =
   'mt-1.5 block w-full h-12 px-3.5 rounded-md border border-dasza-line bg-white text-dasza-ink placeholder:text-dasza-gray focus:outline-none focus:ring-2 focus:ring-dasza-cyan focus:border-dasza-cyan'
@@ -277,21 +278,9 @@ export default function QuotePage() {
                       <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
                         <p className="font-medium">{q.failTitle}</p>
                         <p className="mt-1">{q.failText}</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <a
-                            href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(failed)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center h-10 px-4 rounded-md bg-[#25D366] text-dasza-charcoal font-medium"
-                          >
-                            {t.form.viaWhatsapp}
-                          </a>
-                          <a
-                            href={`mailto:${COMPANY.email}?subject=${encodeURIComponent(q.waIntro)}&body=${encodeURIComponent(failed)}`}
-                            className="inline-flex items-center h-10 px-4 rounded-md border border-red-300 text-red-800 hover:bg-red-100"
-                          >
-                            {t.form.viaEmail}
-                          </a>
+                        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+                          <TextButton href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(failed)}`} newTab>{t.form.viaWhatsapp}</TextButton>
+                          <TextButton href={`mailto:${COMPANY.email}?subject=${encodeURIComponent(q.waIntro)}&body=${encodeURIComponent(failed)}`}>{t.form.viaEmail}</TextButton>
                         </div>
                       </div>
                     )}
