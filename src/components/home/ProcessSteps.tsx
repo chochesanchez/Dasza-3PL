@@ -85,7 +85,7 @@ export default function ProcessSteps() {
 
   return (
     <div ref={outer} className="relative" style={{ height: `calc(100vh - ${HEADER}px + ${N * STEP_PX}px)` }}>
-      <div className="sticky top-[72px] h-[calc(100vh-72px)] flex flex-col justify-center">
+      <div className="sticky top-(--nav-offset) transition-[top] duration-300 ease-out motion-reduce:transition-none h-[calc(100vh-72px)] flex flex-col justify-center">
         <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
           <div className="max-w-2xl mb-8 lg:mb-10">
             <h2 className="font-display text-3xl md:text-5xl font-semibold leading-[1.05]">{t.home.howTitle}</h2>

@@ -17,6 +17,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Header height, and how far pinned sections sit from the top (0 while the header is hidden). */
+:root {
+  --nav-h: 4rem;
+  --nav-offset: var(--nav-h);
+}
+@media (min-width: 768px) {
+  :root { --nav-h: 72px; }
+}
+:root[data-nav='hidden'] {
+  --nav-offset: 0px;
+}
+
 body {
   font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   color: var(--color-dasza-ink);
