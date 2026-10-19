@@ -34,6 +34,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           mobile={{ mp4: '/videos/dasza-ship-720.mp4', webm: '/videos/dasza-ship-720.webm' }}
           poster="/videos/dasza-ship-poster.jpg"
           label={t.home.videoLabel}
+          pauseLabel={t.common.pauseVideo}
+          playLabel={t.common.playVideo}
         >
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.08] max-w-2xl">{t.home.heroTitle}</h1>
           <p className="mt-4 text-base md:text-lg text-white/85 leading-relaxed max-w-xl">{t.home.heroText}</p>
